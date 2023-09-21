@@ -1,13 +1,14 @@
-import MainComponent from "@/components/MainComponent"
-import NavComponent from "@/components/NavComponent"
-import RightSectionComponent from "@/components/RightSectionComponent"
+import { cookies } from "next/headers";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <div className="flex flex-row w-full h-full place-content-center">
-      <NavComponent />
-      <MainComponent />
-      <RightSectionComponent />
-    </div>
-  )
+export default async function Home() {
+  const supabase = createServerComponentClient({ cookies });
+  const { data, error } = await supabase.auth.getUser();
+
+  if(error?.status === 401 && !data.user) {
+    redirect("/login");
+  } else {
+    redirect("/home");
+  }
 }
