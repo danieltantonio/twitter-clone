@@ -18,6 +18,9 @@ const config = withMt({
       colors: {
         primary: "rgb(29, 155, 240)",
         slate: "rgb(148 163 184)",
+      },
+      dropShadow: {
+        "tooltip": "0 0 0.4rem rgb(32, 35, 39)"
       }
     },
     colors: {

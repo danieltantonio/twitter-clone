@@ -5,15 +5,17 @@ import { SignupForm } from "@/lib/types/signupform.types";
 import { FormEvent, useState, useEffect } from "react";
 import * as EmailValidator from "email-validator";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
 import SignUpStepOne from "./SignUpStepOne";
 import SignUpStepTwo from "./SignUpStepTwo";
 import SignUpStepThree from "./SignUpStepThree";
 
 export default function SignupModal(props: { handleInputClickStepThree: () => void, signupForm: SignupForm, signupStep: number, handleSignupStep: () => void, handleSignupForm: (formData: { value: string, name: string }) => void }) {
+  const router = useRouter();
+  const supabase = createClientComponentClient();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
-  const supabase = createClientComponentClient();
 
   function handleFormChange(formData: { value: string, name: string }) {
     const { value, name } = formData;
@@ -37,15 +39,17 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   async function handleSignup() {
     const { email, name, password } = signupForm;
-    const { data, error } = await supabase.auth.signUp({
+    await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           user_name: name
-        }
+        },
+        emailRedirectTo: `${location.origin}/home`
       }
     });
+    router.refresh();
   }
 
   useEffect(() => {

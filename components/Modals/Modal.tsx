@@ -18,8 +18,8 @@ const initSignupForm: SignupForm = {
     confirmPass: ""
 }
 
-export default function Modal(props: { open: boolean, handleClose: () => void }) {
-    const { open, handleClose } = props;
+export default function Modal(props: { className: string, open: boolean, handleClose: () => void }) {
+    const { className, open, handleClose } = props;
     const [signupStep, setSignupStep] = useState(1);
     const [signupForm, setSignupForm] = useState(initSignupForm);
     const { loginModal, signupModal, setLoginModal, setSignupModal } = useModalStore();
@@ -79,7 +79,7 @@ export default function Modal(props: { open: boolean, handleClose: () => void })
     }, [params]);
 
     return (
-        <Dialog open={open} onClose={handleCloseModal} className="absolute top-0 left-0 bg-slate/40 w-screen h-screen">
+        <Dialog open={open} onClose={handleCloseModal} className={`absolute top-0 left-0 bg-slate/40 w-screen h-screen ${className}`}>
             <div className="relative">
                 <Dialog.Panel className="absolute top-36 left-1/3 bg-black w-[600px] rounded-2xl py-2">
                     <div className="flex flex-col">

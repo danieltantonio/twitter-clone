@@ -108,7 +108,7 @@ export default function FrontPage() {
                         </div>
                     </div>
                 </div>
-                <Modal open={openModal} handleClose={handleCloseModal} />
+                <Modal open={openModal} handleClose={handleCloseModal} className="z-10" />
             </div>
         </>
     )
