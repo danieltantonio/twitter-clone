@@ -1,21 +1,25 @@
+"use client"
+
 import Image, { StaticImageData } from "next/image";
+import Button from "./Button";
+
 import googleG from "@/public/googleG.webp";
 import appleLogo from "@/public/appleLogo.webp";
 
 import { Provider, BtnType } from "@/lib/types/buttoninfo.types";
 
-export default function ProviderLoginSignup(props: { provider: Provider, btnType: BtnType }) {
-    const { provider, btnType } = props;
+export default function ProviderLoginSignup(props: { provider: Provider, btnType: BtnType, className?: string, disabled?: boolean, onClick?: (e?: MouseEvent | null) => void }) {
+    const { provider, btnType, className, disabled, onClick } = props;
 
     return (
-        <div className="flex flex-col my-2">
-            <div className="flex flex-row text-black bg-white rounded-full py-2 justify-center">
+        <div className={`${className}`}>
+            <Button className="text-black bg-white" disabled={disabled} onClick={onClick}>
                 <div className="mx-2 flex flex-col justify-center">
-                    <Image 
+                    <Image
                         src={
                             provider === "Google" ?
                                 googleG
-                            :
+                                :
                                 appleLogo
                         }
                         alt={`${provider} logo`}
@@ -25,7 +29,7 @@ export default function ProviderLoginSignup(props: { provider: Provider, btnType
                 <span className="font-semibold">
                     {`${btnType} with ${provider}`}
                 </span>
-            </div>
-        </div>
+            </Button>
+        </div >
     )
 }

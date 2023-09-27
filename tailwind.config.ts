@@ -1,7 +1,8 @@
 import type { Config } from 'tailwindcss'
 import colors from "tailwindcss/colors";
+import withMt from "@material-tailwind/react/utils/withMT";
 
-const config: Config = {
+const config = withMt({
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -25,9 +26,11 @@ const config: Config = {
       black: colors.black,
       rdgrey: "rgb(22, 24, 28)",
       rlgrey: "rgb(32, 35, 39)",
-      rwhite: "rgb(239, 243, 244)"
+      rwhite: "rgb(239, 243, 244)",
+      green: "rgb(0, 186, 124)"
     }
   },
   plugins: [],
-}
+});
+
 export default config

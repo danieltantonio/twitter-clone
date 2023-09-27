@@ -3,9 +3,9 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default async function checkLogin(): Promise<boolean> {
     const supabase = createServerComponentClient({ cookies });
-    const { error } = await supabase.auth.getUser();
+    const { error, data } = await supabase.auth.getUser();
 
-    if(error?.status === 401) return false;
+    if(error?.status === 401 && !data.user) return false;
 
     return true;
 }

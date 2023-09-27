@@ -1,14 +1,13 @@
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+"use server"
+
 import { redirect } from "next/navigation";
+import FrontPage from "@/components/FrontPageComponent";
+import checkLogin from "@/lib/checkLogin";
 
 export default async function Home() {
-  const supabase = createServerComponentClient({ cookies });
-  const { data, error } = await supabase.auth.getUser();
+  if(await checkLogin()) redirect("/home");
 
-  if(error?.status === 401 && !data.user) {
-    redirect("/login");
-  } else {
-    redirect("/home");
-  }
+  return (
+        <FrontPage />
+  )
 }
