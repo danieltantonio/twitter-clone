@@ -6,6 +6,7 @@ import { FormEvent, useState, useEffect } from "react";
 import * as EmailValidator from "email-validator";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@material-tailwind/react";
 
 import SignUpStepOne from "./SignUpStepOne";
 import SignUpStepTwo from "./SignUpStepTwo";
@@ -16,6 +17,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
   const supabase = createClientComponentClient();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
+  const [signupLoading, setSignupLoading] = useState(false);
 
   function handleFormChange(formData: { value: string, name: string }) {
     const { value, name } = formData;
@@ -39,6 +41,9 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   async function handleSignup() {
     const { email, name, password } = signupForm;
+
+    setSignupLoading(true);
+
     await supabase.auth.signUp({
       email,
       password,
@@ -49,7 +54,8 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
         emailRedirectTo: `${location.origin}/home`
       }
     });
-    router.refresh();
+
+    router.push("/home");
   }
 
   useEffect(() => {
@@ -63,7 +69,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
   }, [signupForm, signupStep]);
 
   return (
-    <div className="mx-auto w-3/4 flex flex-col">
+    <div className="mx-auto w-3/4 flex flex-col relative">
       <div className="my-4 flex flex-col">
         <span className="font-bold text-4xl">Create your account</span>
         <span className="text-md">
@@ -85,7 +91,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
         signupStep === 2 && <SignUpStepTwo password={signupForm.password} confirmPass={signupForm.confirmPass} onFormChange={onFormChange} />
       }
       {
-        signupStep === 3 && <SignUpStepThree email={signupForm.email} name={signupForm.name} handleInputClickStepThree={handleInputClickStepThree}/>
+        signupStep === 3 && <SignUpStepThree email={signupForm.email} name={signupForm.name} handleInputClickStepThree={handleInputClickStepThree} />
       }
       <div>
         {
@@ -95,6 +101,14 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
             <Button className="bg-primary my-4 text-white font-bold" onClick={handleSignup}>Sign up</Button>
         }
       </div>
+      {
+
+        signupLoading && (
+          <div className="absolute h-full w-full bg-black flex flex-col justify-center">
+            <Spinner className="mx-auto h-12 w-12" color="blue" />
+          </div>
+        )
+      }
     </div>
   )
 }

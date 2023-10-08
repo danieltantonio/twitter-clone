@@ -9,8 +9,9 @@ import Link from "next/link";
 import { Tooltip } from "@material-tailwind/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
+import type { UserData } from "@/lib/types/userdata.types";
 
 type NavLink = {
   title: string,
@@ -52,7 +53,8 @@ const navLinks: NavLink[] = [
   }
 ];
 
-export default function NavComponent() {
+export default function NavComponent(props: { userData: UserData }) {
+  const { userData } = props;
   const [logoutTooltip, setLogoutTooltip] = useState(false);
   const supabase = createClientComponentClient();
   const router = useRouter();
@@ -93,7 +95,7 @@ export default function NavComponent() {
           content={
             <div className="flex flex-col" onClick={handleLogout}>
               <div className="h-[40px] flex flex-col justify-center hover:bg-rlgrey/30 hover:cursor-pointer p-4 rounded-lg">
-                <span className="font-bold text-lg">Log out @Daniel</span>
+                <span className="font-bold text-lg">Log out @{userData.userName}</span>
               </div>
             </div>
           }
@@ -105,8 +107,8 @@ export default function NavComponent() {
               <div className="flex flex-row align-middle h-10">
                 <div className="w-[40px] h-[40px] bg-slate rounded-full"></div>
                 <div className="flex flex-col mx-2">
-                  <span className="font-bold text-lg leading-4">Daniel</span>
-                  <span className="text-slate/50 font-ultralight">@Daniel</span>
+                  <span className="font-bold text-lg leading-4">{userData.displayName}</span>
+                  <span className="text-slate/50 font-ultralight">@{userData.userName}</span>
                 </div>
               </div>
               <div className="h-[20px] my-auto"><BiDotsHorizontalRounded size={20} /></div>

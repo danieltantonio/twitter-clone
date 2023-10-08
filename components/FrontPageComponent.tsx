@@ -27,11 +27,13 @@ export default function FrontPage() {
 
     function onClickLogin() {
         handleOpenModal();
+        setSignupModal(false);
         setLoginModal(true);
     }
 
     function onClickSignup() {
         handleOpenModal();
+        setLoginModal(false);
         setSignupModal(true);
     }
 

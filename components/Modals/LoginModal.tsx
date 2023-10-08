@@ -2,9 +2,10 @@
 
 import { Input } from "@material-tailwind/react";
 import ProviderLoginSignup from "@/components/Inputs/Buttons/ProviderLoginSignup";
-import { useState, FormEvent } from "react";
-
 import Button from "@/components/Inputs/Buttons/Button";
+import { useState, FormEvent } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
 type LoginForm = {
     email: string,
@@ -18,10 +19,21 @@ const initLoginForm: LoginForm = {
 
 export default function LoginModal() {
     const [loginForm, setLoginForm] = useState(initLoginForm);
+    const supabase = createClientComponentClient();
+    const router = useRouter();
 
     function handleLoginForm(e: FormEvent<HTMLInputElement>) {
         const { value, name } = e.target;
         setLoginForm({ ...loginForm, [name]: value });
+    }
+
+    async function handleLogin() {
+        const { email, password } = loginForm;
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        
+        if(data.user) {
+            router.push("/home");
+        }
     }
 
     return (
@@ -48,7 +60,7 @@ export default function LoginModal() {
             <div className="mb-8">
                 <Input type="password" name="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" onInput={handleLoginForm} />
             </div>
-            <Button className="bg-white/90 my-4 text-black font-bold">Log In</Button>
+            <Button className="bg-white/90 my-4 text-black font-bold" onClick={handleLogin}>Log In</Button>
             <Button className="border border-slate/75 text-white">Forgot Password?</Button>
             <div className="my-10 pb-20 text-sm">
                 <span className="text-slate/75">Don't have an account? <span className="text-primary cursor-pointer">Sign up</span></span>
