@@ -3,12 +3,11 @@
 import PostComponent from "./PostComponent";
 import { PostTweet } from "./ServerComponents/TweetActions";
 
-import { AiOutlinePicture, AiOutlineFileGif, AiOutlineSchedule, AiOutlineHeart } from "react-icons/ai";
+import { AiOutlinePicture, AiOutlineFileGif, AiOutlineSchedule } from "react-icons/ai";
 import { BiPoll } from "react-icons/bi";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Spinner } from "@material-tailwind/react";
 
 import type { Tweet } from "@/lib/types/tweet.types";
@@ -16,18 +15,12 @@ import type { UserData } from "@/lib/types/userdata.types";
 
 const initPosts: Tweet[] = [];
 
-function checkIfScrollBar(e: React.ChangeEvent<HTMLInputElement>) {
-  e.target.style.height = "auto";
-  const scHeight = e.target.scrollHeight;
-  e.target.style.height = `${scHeight}px`;
-}
-
 function HomeOption(props: { label: string, className?: string }): JSX.Element {
   const { label, className } = props;
   let includedClasses = "w-1/2 text-center p-4 h-full hover:bg-white/10 font-semibold text-sm group";
-
+  
   if (className) includedClasses = includedClasses.concat(" ", className);
-
+  
   return (
     <div className={includedClasses}>
       <span>{label}</span>
@@ -38,6 +31,19 @@ function HomeOption(props: { label: string, className?: string }): JSX.Element {
 export default function MainComponent(props: { userData: UserData }) {
   const { userData } = props;
   const [posts, setPosts] = useState(initPosts);
+  const [tweetTextArea, setTweetTextArea] = useState("");
+  
+  function checkIfScrollBar(e: React.ChangeEvent<HTMLInputElement>) {
+    e.target.style.height = "auto";
+    const scHeight = e.target.scrollHeight;
+    e.target.style.height = `${scHeight}px`;
+  }
+
+  function handleTweetTextArea(e: React.FormEvent<HTMLTextAreaElement>) {
+    const { value } = e.target;
+    checkIfScrollBar(e);
+    setTweetTextArea(value);
+  }
 
   async function getTweets() {
     const res = await fetch("http://localhost:3000/api/tweets");
@@ -49,14 +55,14 @@ export default function MainComponent(props: { userData: UserData }) {
   }
 
   async function handlePostTweet(formData: FormData) {
-    const supabase = createClientComponentClient();
-    const tweetData = formData.get("tweet");
+    const createdTweet = await PostTweet(formData, userData.id);
+    const getTweet = createdTweet?.[0];
 
-    const { data, error } = await supabase.auth.getUser();
-
-    PostTweet(formData);
-
-    // if (data.user) setPosts([{ id: null, post_content: tweetData, profile_id: data.user.id, created_at: Date.now(), profile:  }, ...posts]);
+    if(getTweet) {
+      const newTweet: Tweet = { id: getTweet.id, post_content: getTweet.post_content, profile_id: userData.id, created_at: getTweet.created_at, updated_at: null, profile: { user_name: userData.userName, display_name: userData.displayName }, like: [] };
+      setPosts([newTweet, ...posts]);
+      setTweetTextArea("");
+    }
   }
 
   useEffect(() => {
@@ -81,7 +87,7 @@ export default function MainComponent(props: { userData: UserData }) {
         </div>
         <div className="flex flex-col w-full mx-2">
           <form action={handlePostTweet}>
-            <textarea name="tweet" className="resize-none w-full bg-transparent text-xl placeholder:font-thin" placeholder="What is happening?" onInput={checkIfScrollBar}></textarea>
+            <textarea name="tweet" className="resize-none w-full bg-transparent text-xl placeholder:font-thin" placeholder="What is happening?" onInput={handleTweetTextArea} value={tweetTextArea}></textarea>
             <div className="flex flex-row justify-between mt-2">
               <div className="flex flex-row w-1/3 justify-between mt-2 text-primary text-xl">
                 <AiOutlinePicture />
