@@ -22,6 +22,8 @@
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.13",
     "next": "13.4.13",
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
     "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -31,6 +33,7 @@
     "zustand": "^4.4.1"
   },
   "devDependencies": {
+    "@types/pg-pool": "^2.0.4",
     "supabase": "^1.99.5"
   }
 }

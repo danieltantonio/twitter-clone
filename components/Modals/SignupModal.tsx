@@ -44,7 +44,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
     setSignupLoading(true);
 
-    await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -55,7 +55,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
       }
     });
 
-    router.push("/home");
+    if(data.user) router.push("/home");
   }
 
   useEffect(() => {
