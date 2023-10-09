@@ -12,6 +12,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Spinner } from "@material-tailwind/react";
 
 import type { Tweet } from "@/lib/types/tweet.types";
+import type { UserData } from "@/lib/types/userdata.types";
 
 const initPosts: Tweet[] = [];
 
@@ -34,7 +35,8 @@ function HomeOption(props: { label: string, className?: string }): JSX.Element {
   )
 }
 
-export default function MainComponent() {
+export default function MainComponent(props: { userData: UserData }) {
+  const { userData } = props;
   const [posts, setPosts] = useState(initPosts);
 
   async function getTweets() {
@@ -99,7 +101,7 @@ export default function MainComponent() {
         posts.length ?
           posts.map((tweet, i) => {
             return (
-              <PostComponent key={i} tweet={tweet} />
+              <PostComponent key={i} tweet={tweet} userData={userData} />
             )
           })
           :

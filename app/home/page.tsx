@@ -44,7 +44,7 @@ export default function Home() {
     return (
         <>
             <NavComponent userData={userData} />
-            <MainComponent />
+            <MainComponent userData={userData} />
             <RightSectionComponent />
         </>
     )

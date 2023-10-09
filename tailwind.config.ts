@@ -30,7 +30,8 @@ const config = withMt({
       rdgrey: "rgb(22, 24, 28)",
       rlgrey: "rgb(32, 35, 39)",
       rwhite: "rgb(239, 243, 244)",
-      green: "rgb(0, 186, 124)"
+      green: "rgb(0, 186, 124)",
+      like: "rgb(249, 24, 128)"
     }
   },
   plugins: [],

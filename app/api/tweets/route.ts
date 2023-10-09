@@ -11,6 +11,10 @@ export async function GET() {
                             profile (
                                 user_name,
                                 display_name
+                            ),
+                            like (
+                                id,
+                                user_id
                             )
                             `)
                             .order("created_at", { ascending: false });
