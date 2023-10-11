@@ -40,7 +40,8 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
           await supabase
             .from("like")
             .delete()
-            .eq("user_id", userData.id);
+            .eq("user_id", userData.id)
+            .eq("tweet_id", tweet.tweetID);
 
           setLikedPost(false);
           setLikes(likes - 1);
