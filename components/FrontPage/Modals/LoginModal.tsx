@@ -34,10 +34,10 @@ export default function LoginModal() {
         const { email, password } = loginForm;
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
+        if(error) console.log(error);
 
         if (data.user) {
             router.push("/home");
-            setIsLoading(false);
         } else {
             setIsLoading(false);
         }

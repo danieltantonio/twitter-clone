@@ -1,6 +1,6 @@
 "use client"
 
-import Button from "../Inputs/Buttons/Button";
+import Button from "../../Inputs/Buttons/Button";
 import { SignupForm } from "@/lib/types/signupform.types";
 import { FormEvent, useState, useEffect } from "react";
 import * as EmailValidator from "email-validator";

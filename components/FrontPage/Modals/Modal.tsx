@@ -1,4 +1,6 @@
-import { useState, useEffect, FormEvent } from "react";
+"use client"
+
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Dialog } from "@headlessui/react";
 import { CgClose } from "react-icons/cg";

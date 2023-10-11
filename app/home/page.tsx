@@ -1,51 +1,50 @@
-"use client"
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-import { useState, useMemo } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
-import MainComponent from "@/components/MainComponent"
-import NavComponent from "@/components/NavComponent"
+import MainComponent from "@/components/MainSection/MainComponent"
+import NavComponent from "@/components/NavSection/NavComponent"
 import RightSectionComponent from "@/components/RightSectionComponent"
 
 import type { UserData } from "@/lib/types/userdata.types";
 
-const initUserData: UserData = {
-    id: "",
-    displayName: "",
-    userName: ""
-}
+async function getUserData() {
+    const supabase = createServerComponentClient({ cookies });
+    const { data, error } = await supabase.auth.getUser();
 
-export default function Home() {
-    const [userData, setUserData] = useState(initUserData);
-
-    async function getUserData() {
-        const supabase = createClientComponentClient();
-        const { data, error } = await supabase.auth.getUser();
-
-        if(error) console.log(error);
-
-        if(data.user) {
-            const { data: userData, error } = await supabase.from("profile").select("*").eq("id", data.user.id);
-
-            if(userData) {
-                const id = userData[0]["id"];
-                const displayName = userData[0]["display_name"];
-                const userName = userData[0]["user_name"];
-
-                setUserData({ id, displayName, userName });
-            }
-        }
+    if (error) {
+        console.error({ HomeComponent: error });
+        return;
     }
 
-    useMemo(() => {
-        getUserData();
-    }, []);
+    if (data.user) {
+        const { data: userData, error: dataError } = await supabase.from("profile").select("*").eq("id", data.user.id);
+
+        if (dataError) console.error(dataError);
+
+        if (userData) {
+            const id = userData[0]["id"];
+            const displayName = userData[0]["display_name"];
+            const userName = userData[0]["user_name"];
+
+            return ({ id, displayName, userName });
+        }
+    }
+}
+
+export default async function Home() {
+    const userData: UserData | undefined = await getUserData();
 
     return (
         <>
-            <NavComponent userData={userData} />
-            <MainComponent userData={userData} />
-            <RightSectionComponent />
+            {
+                userData && (
+                    <>
+                        <NavComponent userData={userData} />
+                        <MainComponent userData={userData} />
+                        <RightSectionComponent />
+                    </>
+                )
+            }
         </>
     )
 }

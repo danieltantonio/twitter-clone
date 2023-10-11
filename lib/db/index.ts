@@ -1,8 +1,6 @@
-import Pool from "pg-pool";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import * as schema from "./schema";
 
-export const pool = new Pool({
-    database: "postgres",
-    connectionString: process.env.SUPABASE_CONNECTION_STRING,
-    allowExitOnIdle: true,
-    port: 6534
-})
+const client = postgres(process.env.SUPABASE_CONNECTION_STRING as string);
+export const db = drizzle(client, { schema });
