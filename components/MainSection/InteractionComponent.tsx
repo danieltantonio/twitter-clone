@@ -22,34 +22,36 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
 
     async function handleLike() {
         if (!likedPost) {
-          const { data, error } = await supabase
-            .from("like")
-            .insert([
-              { user_id: userData.id, tweet_id: tweet.tweetID }
-            ])
-            .select();
+            const { data, error } = await supabase
+                .from("like")
+                .insert([
+                    { user_id: userData.id, tweet_id: tweet.tweetID }
+                ])
+                .select();
 
-          if (data) {
-            const newLike = data[0];
+            if (error) {
+                console.error(error);
+            } 
 
-            setLikedPost(true);
-            setLikes(likes + 1);
-          }
+            if (data) {
+                setLikedPost(true);
+                setLikes(likes + 1);
+            }
 
         } else {
-          await supabase
-            .from("like")
-            .delete()
-            .eq("user_id", userData.id)
-            .eq("tweet_id", tweet.tweetID);
+            await supabase
+                .from("like")
+                .delete()
+                .eq("user_id", userData.id)
+                .eq("tweet_id", tweet.tweetID);
 
-          setLikedPost(false);
-          setLikes(likes - 1);
+            setLikedPost(false);
+            setLikes(likes - 1);
         }
     }
 
     useMemo(() => {
-        if(tweet.hasLikedTweet) setLikedPost(true);
+        if (tweet.hasLikedTweet) setLikedPost(true);
     }, []);
 
     return (
@@ -69,11 +71,11 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
             <div className="flex flex-row items-center cursor-pointer group" onClick={handleLike}>
                 <div className="h-full p-2 rounded-full group-hover:bg-like/20">
                     {
-              likedPost ?
-                <AiFillHeart className="text-like" />
-                :
-                <AiOutlineHeart className="group-hover:text-like/50" />
-            }
+                        likedPost ?
+                            <AiFillHeart className="text-like" />
+                            :
+                            <AiOutlineHeart className="group-hover:text-like/50" />
+                    }
                 </div>
                 <span className={`text-sm font-light px-2 group-hover:text-like ${likedPost && "text-like"}`}>{statToString(likes)}</span>
             </div>

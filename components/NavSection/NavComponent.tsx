@@ -1,5 +1,3 @@
-"use client"
-
 import { BsTwitter, BsBell, BsBookmark, BsPeople, BsPerson } from "react-icons/bs";
 import { BiHomeCircle, BiSearchAlt2, BiEnvelope } from "react-icons/bi";
 import { PiDotsThreeCircle } from "react-icons/pi";

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Tooltip } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Spinner } from "@material-tailwind/react"
 
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
@@ -13,6 +14,7 @@ export default function ToolTipComponent(props: { userData: UserData }) {
     const { userData } = props;
 
     const [logoutTooltip, setLogoutTooltip] = useState(false);
+    const [clickedLogout, setClickedLogout] = useState(false);
     const supabase = createClientComponentClient();
     const router = useRouter();
 
@@ -25,6 +27,7 @@ export default function ToolTipComponent(props: { userData: UserData }) {
     }
 
     async function handleLogout() {
+        setClickedLogout(true);
         await supabase.auth.signOut();
         router.replace("/");
     }
@@ -34,8 +37,15 @@ export default function ToolTipComponent(props: { userData: UserData }) {
             <Tooltip
                 content={
                     <div className="flex flex-col" onClick={handleLogout}>
-                        <div className="h-[40px] flex flex-col justify-center hover:bg-rlgrey/30 hover:cursor-pointer p-4 rounded-lg">
+                        <div className="relative h-[40px] flex flex-col justify-center hover:bg-rlgrey/30 hover:cursor-pointer p-4 rounded-lg">
                             <span className="font-bold text-lg">Log out @{userData.userName}</span>
+                        {
+                            clickedLogout && (
+                                <div className="absolute h-full w-full top-0 left-0 flex flex-col justify-center bg-black rounded-lg">
+                                    <Spinner color="blue" className="mx-auto"/>
+                                </div>
+                            )
+                        }
                         </div>
                     </div>
                 }
