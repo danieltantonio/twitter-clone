@@ -9,9 +9,9 @@ export default async function TweetsDisplayDashboard(props: { tweets: Tweet[], u
     return (
         <>
             {
-                tweets.length && tweets.map((tweet, i) => {
+                tweets.length && tweets.map((tweet) => {
                     return (
-                        <PostComponent key={tweet.tweetID} tweet={tweet} userData={userData} />
+                        <PostComponent key={tweet.id} tweet={tweet} userData={userData} />
                     )
                 })
             }

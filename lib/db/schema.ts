@@ -14,8 +14,7 @@ export const tweet = pgTable("tweet", {
     postContent: text("post_content").notNull(),
     profileID: uuid("profile_id").notNull().references(() => profile.id),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    isReply: boolean("is_reply").notNull().default(false),
-    replyID: uuid("reply_id").references(() => tweet.id)
+    isReply: boolean("is_reply").notNull().default(false)
 });
 
 export const like = pgTable("like", {
@@ -27,9 +26,10 @@ export const like = pgTable("like", {
 
 export const reply = pgTable("reply", {
     id: uuid("id").primaryKey().unique().notNull().defaultRandom(),
-    replyContent: text("reply_content").notNull(),
     profileID: uuid("profile_id").notNull().references(() => profile.id),
-    tweetID: uuid("tweet_id").notNull().references(() => tweet.id)
+    tweetID: uuid("tweet_id").notNull().references(() => tweet.id),
+    replyTo: uuid("reply_to").notNull().references(() => tweet.id),
+    originalTweet: uuid("original_tweet").notNull().references(() => tweet.id)
 });
 
 export const bookmark = pgTable("bookmark", {
@@ -56,11 +56,12 @@ export const profileRelations = relations(profile, ({ many }) => ({
     bookmark: many(bookmark)
 }));
 
-export const tweetRelations = relations(tweet, ({ one }) => ({
+export const tweetRelations = relations(tweet, ({ one, many }) => ({
     profile: one(profile, {
       fields: [tweet.profileID],
       references: [profile.id]  
-    })
+    }),
+    replies: many(reply)
 }));
 
 export const likeRelations = relations(like, ({ one }) => ({
@@ -74,11 +75,23 @@ export const likeRelations = relations(like, ({ one }) => ({
     })
 }));
 
-export const replyRelations = relations(reply, ({ one }) => ({
+export const replyRelations = relations(reply, ({ one, many }) => ({
     profile: one(profile, {
         fields: [reply.profileID],
         references: [profile.id]
     }),
+    tweetID: one(tweet, {
+        fields: [reply.tweetID],
+        references: [tweet.id]
+    }),
+    replyTo: one(tweet, {
+        fields: [reply.replyTo],
+        references: [tweet.id]
+    }),
+    originalTweet: one(tweet, {
+        fields: [reply.originalTweet],
+        references: [tweet.id]
+    })
 }));
 
 export const bookmarkRelations = relations(bookmark, ({ one }) => ({

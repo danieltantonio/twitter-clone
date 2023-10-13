@@ -5,12 +5,12 @@ export type Profile = {
 }
 
 export type Tweet = {
-  tweetID: string,
+  id: string,
   authorInfo: Profile,
   textContent: string,
   likeCount: string,
+  replyCount: string,
   isReply: boolean,
-  replyID: string | null,
   createdAt: string,
   hasLikedTweet: boolean
 }

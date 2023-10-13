@@ -7,7 +7,7 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
     const currentUser = params.userID;
 
     const allUsers = await db.select({
-        tweetID: schemas.tweet.id,
+        id: schemas.tweet.id,
         authorInfo: {
             authorID: schemas.tweet.profileID,
             authorDisplayName: schemas.profile.displayName,
@@ -15,8 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
         },
         textContent: schemas.tweet.postContent,
         likeCount: sql`COUNT(${schemas.like.id})`,
-        isReply: schemas.tweet.isReply,
-        replyID: schemas.tweet.replyID,
+        replyCount: sql`COUNT(${schemas.reply.id})`,
         createdAt: schemas.tweet.createdAt,
         hasLikedTweet: exists(
             db.select()
@@ -27,6 +26,8 @@ export async function GET(req: NextRequest, { params }: { params: { userID: stri
     .from(schemas.tweet)
     .leftJoin(schemas.profile, eq(schemas.tweet.profileID, schemas.profile.id))
     .leftJoin(schemas.like, eq(schemas.tweet.id, schemas.like.tweetID))
+    .leftJoin(schemas.reply, eq(schemas.tweet.id, schemas.reply.replyTo))
+    .where(eq(schemas.tweet.isReply, false))
     .orderBy(desc(schemas.tweet.createdAt))
     .groupBy(schemas.tweet.id, schemas.profile.id)
     .limit(50);

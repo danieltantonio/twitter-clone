@@ -31,7 +31,8 @@ const config = withMt({
       rlgrey: "rgb(32, 35, 39)",
       rwhite: "rgb(239, 243, 244)",
       green: "rgb(0, 186, 124)",
-      like: "rgb(249, 24, 128)"
+      like: "rgb(249, 24, 128)",
+      retweet: "rgb(0, 186, 124)"
     }
   },
   plugins: [],
