@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { Tooltip } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Spinner } from "@material-tailwind/react"
 
 import { BiDotsHorizontalRounded } from "react-icons/bi";
@@ -15,7 +15,7 @@ export default function ToolTipComponent(props: { userData: UserData }) {
 
     const [logoutTooltip, setLogoutTooltip] = useState(false);
     const [clickedLogout, setClickedLogout] = useState(false);
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     const router = useRouter();
 
     function handleOpenLogoutTooltip() {
@@ -29,7 +29,8 @@ export default function ToolTipComponent(props: { userData: UserData }) {
     async function handleLogout() {
         setClickedLogout(true);
         await supabase.auth.signOut();
-        router.replace("/");
+        router.push("/");
+        router.refresh();
     }
 
     return (

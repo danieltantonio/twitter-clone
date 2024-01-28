@@ -4,7 +4,7 @@ import { BsTwitter } from "react-icons/bs";
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useModalStore } from "@/lib/store/modalStore";
+import { useModalStore } from "@/lib/store/signupLoginModal";
 
 import Modal from "@/components/FrontPage/Modals/Modal";
 import ProviderLoginSignup from "@/components/Inputs/Buttons/ProviderLoginSignup";

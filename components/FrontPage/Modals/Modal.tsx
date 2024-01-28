@@ -6,7 +6,7 @@ import { Dialog } from "@headlessui/react";
 import { CgClose } from "react-icons/cg";
 import { BsTwitter } from "react-icons/bs";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { useModalStore } from "@/lib/store/modalStore";
+import { useModalStore } from "@/lib/store/signupLoginModal";
 
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
@@ -24,7 +24,10 @@ export default function Modal(props: { className: string, open: boolean, handleC
     const { className, open, handleClose } = props;
     const [signupStep, setSignupStep] = useState(1);
     const [signupForm, setSignupForm] = useState(initSignupForm);
-    const { loginModal, signupModal, setLoginModal, setSignupModal } = useModalStore();
+    const loginModal = useModalStore((state) => state.loginModal);
+    const signupModal = useModalStore((state) => state.signupModal);
+    const setLoginModal = useModalStore((state) => state.setLoginModal);
+    const setSignupModal = useModalStore((state) => state.setSignupModal);
 
     const params = useSearchParams();
 

@@ -1,13 +1,17 @@
+import Link from "next/link";
+import { cookies } from "next/headers";
+
 import { BsTwitter, BsBell, BsBookmark, BsPeople, BsPerson } from "react-icons/bs";
 import { BiHomeCircle, BiSearchAlt2, BiEnvelope } from "react-icons/bi";
 import { PiDotsThreeCircle } from "react-icons/pi";
 
-import { IconType } from "react-icons/lib/esm/iconBase";
-import Link from "next/link";
+import { type UserData } from "@/lib/types/userdata.types";
+import { type IconType } from "react-icons/lib/esm/iconBase";
 
+import TweetButtonComponent from "./TweetButtonComponent";
 import ToolTipComponent from "./ToolTipComponent";
 
-import type { UserData } from "@/lib/types/userdata.types"
+import getUserData from "@/lib/getUserData";
 
 type NavLink = {
   title: string,
@@ -49,8 +53,9 @@ const navLinks: NavLink[] = [
   }
 ];
 
-export default async function NavComponent(props: { userData: UserData }) {
-  const { userData } = props;
+export default async function NavComponent() {
+  const cookieStore = cookies();
+  const userData = await getUserData(cookieStore) as UserData;
 
   return (
     <header className="sticky top-0 h-screen">
@@ -69,7 +74,7 @@ export default async function NavComponent(props: { userData: UserData }) {
               );
             })
           }
-          <button className="bg-primary w-[90%] py-4 rounded-full font-bold mt-5">Tweet</button>
+          <TweetButtonComponent />
         </div>
         <ToolTipComponent userData={userData} />
       </div>

@@ -8,39 +8,16 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@material-tailwind/react";
 
-type LoginForm = {
-    email: string,
-    password: string
-}
-
-const initLoginForm: LoginForm = {
-    email: "",
-    password: ""
-}
+import { LoginAction } from "@/lib/ServerActions/AuthActions";
 
 export default function LoginModal() {
-    const [loginForm, setLoginForm] = useState(initLoginForm);
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = createClientComponentClient();
     const router = useRouter();
 
-    function handleLoginForm(e: FormEvent<HTMLInputElement>) {
-        const { value, name } = e.target;
-        setLoginForm({ ...loginForm, [name]: value });
-    }
-
-    async function handleLogin() {
+    async function handleLoginAction(formData: FormData) {
         setIsLoading(true);
-        const { email, password } = loginForm;
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-        if(error) console.log(error);
-
-        if (data.user) {
-            router.push("/home");
-        } else {
-            setIsLoading(false);
-        }
+        await LoginAction(formData);
+        router.push("/home");
     }
 
     return (
@@ -61,16 +38,18 @@ export default function LoginModal() {
                     <div className="h-[1px] bg-rlgrey"></div>
                 </div>
             </div>
-            <div className="mt-8 mb-4">
-                <Input type="email" name="email" color="blue" size="lg" label="Phone, email, username" className="text-white text-xl h-[50px]" onInput={handleLoginForm} />
-            </div>
-            <div className="mb-8">
-                <Input type="password" name="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" onInput={handleLoginForm} />
-            </div>
-            <Button className="bg-white/90 my-4 text-black font-bold" onClick={handleLogin}>Log In</Button>
+            <form action={handleLoginAction}>
+                <div className="mt-8 mb-4">
+                    <Input type="email" name="email" color="blue" size="lg" label="Phone, email, username" className="text-white text-xl h-[50px]" />
+                </div>
+                <div className="mb-8">
+                    <Input type="password" name="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" />
+                </div>
+                <Button className="bg-white/90 my-4 text-black font-bold"><button type="submit">Login</button></Button>
+            </form>
             <Button className="border border-slate/75 text-white">Forgot Password?</Button>
             <div className="my-10 pb-20 text-sm">
-                <span className="text-slate/75">Don't have an account? <span className="text-primary cursor-pointer">Sign up</span></span>
+                <span className="text-slate/75">Don&apos;t have an account? <span className="text-primary cursor-pointer">Sign up</span></span>
             </div>
             {
                 isLoading && (

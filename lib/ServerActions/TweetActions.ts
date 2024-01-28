@@ -1,11 +1,11 @@
 "use server"
 
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "../supabase/server";
 import { cookies } from "next/headers";
 
-const supabase = createServerActionClient({ cookies });
-
 export async function PostTweet(formData: FormData, profile_id: string) {
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
     const tweetContent = formData.get("tweet");
     const post_content = tweetContent?.toString();
 
@@ -16,7 +16,7 @@ export async function PostTweet(formData: FormData, profile_id: string) {
         }])
         .select();
 
-    if(error) console.log(error);
+    if(error) console.error(error);
 
     return data;
 }

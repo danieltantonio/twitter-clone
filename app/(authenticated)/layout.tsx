@@ -3,10 +3,7 @@ import '../globals.css'
 import NavComponent from '@/components/NavSection/NavComponent'
 import RightSectionComponent from '@/components/RightSectionComponent'
 
-import getUserData from '@/lib/getUserData'
-
 import type { Metadata } from 'next'
-import type { UserData } from '@/lib/types/userdata.types'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,21 +15,18 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode
 }) {
-  const userData: UserData | undefined = await getUserData();
 
   return (
     <html lang="en">
       <body className={`flex flex-row w-full h-full place-content-center relative`}>
         {
-          userData && (
-            <>
-              <NavComponent userData={userData} />
-              <main className="w-[600px] border-x border-slate/25 flex flex-col">
-                {children}
-              </main>
-              <RightSectionComponent />
-            </>
-          )
+          <>
+            <NavComponent />
+            <main className="w-[600px] border-x border-slate/25 flex flex-col">
+              {children}
+            </main>
+            <RightSectionComponent />
+          </>
         }
       </body>
     </html>

@@ -1,6 +1,8 @@
 "use client"
 
 import statToString from "@/lib/statToString";
+import fgClick from "@/lib/onClickForeground";
+import { createClient } from "@/lib/supabase/client";
 
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
@@ -8,7 +10,6 @@ import { IoIosStats } from "react-icons/io";
 import { LuShare } from "react-icons/lu";
 import { BiRepost } from "react-icons/bi";
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useState, useMemo } from "react";
 
 import type { Tweet } from "@/lib/types/tweet.types";
@@ -20,7 +21,7 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
     const [replies, setReplies] = useState(parseInt(tweet.replyCount));
     const [likedPost, setLikedPost] = useState(false);
 
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
 
     async function handleLike() {
         if (!likedPost) {
@@ -50,10 +51,6 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
             setLikedPost(false);
             setLikes(likes - 1);
         }
-    }
-
-    function fgClick(e: MouseEventHandler) {
-        e.stopPropagation();
     }
 
     useMemo(() => {

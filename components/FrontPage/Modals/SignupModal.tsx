@@ -34,7 +34,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
     }
   }
 
-  function onFormChange(e: FormEvent<HTMLInputElement>) {
+  function onFormChange(e: any) { // FIX ME
     const { value, name } = e.target;
     handleFormChange({ value, name });
   }

@@ -84,7 +84,7 @@ export default function RightSectionComponent() {
         </div>
 
         <div className="flex flex-col bg-rdgrey rounded-2xl mb-4">
-            <span className="text-xl font-bold my-4 px-4">What's happening</span>
+            <span className="text-xl font-bold my-4 px-4">What&apos;s happening</span>
             <TrendComponent /> 
             <div className="p-4 w-full">
                 <span className="font-light text-sm text-primary">Show more</span>

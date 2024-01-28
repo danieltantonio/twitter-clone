@@ -13,7 +13,7 @@ export const tweet = pgTable("tweet", {
     id: uuid("id").primaryKey().notNull().unique().defaultRandom(),
     postContent: text("post_content").notNull(),
     profileID: uuid("profile_id").notNull().references(() => profile.id),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     isReply: boolean("is_reply").notNull().default(false)
 });
 

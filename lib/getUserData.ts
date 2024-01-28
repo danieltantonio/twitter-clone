@@ -1,28 +1,32 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "./supabase/server";
 import { cookies } from "next/headers";
 
-import { UserData } from "./types/userdata.types";
-
-export default async function getUserData(): Promise<UserData | undefined> {
-  const supabase = createServerComponentClient({ cookies });
+export default async function getUserData(cookieStore: ReturnType<typeof cookies>) {
+  const supabase = await createClient(cookieStore);
   const { data, error } = await supabase.auth.getUser();
 
-  if (error) {
-    console.error({ HomeComponent: error });
+  if(error) {
+    console.error("getUserData() Error: ", error);
     return;
   }
 
-  if (data.user) {
-    const { data: userData, error: dataError } = await supabase.from("profile").select("*").eq("id", data.user.id);
-
-    if (dataError) console.error(dataError);
-
-    if (userData) {
-      const id = userData[0]["id"];
-      const displayName = userData[0]["display_name"];
-      const userName = userData[0]["user_name"];
-
-      return ({ id, displayName, userName });
-    }
+  if(!data.user) {
+    return;
   }
+
+  const authUser = data.user;
+  const { data: userProfiles, error: sqlErr } = await supabase.from("profile").select("*").eq("id", authUser.id);
+
+  if(sqlErr) {
+    console.error("getUserData() SQL Error: ", sqlErr);
+    return;
+  }
+
+  const users = userProfiles as any[];
+  const user = users[0];
+  const id = user.id;
+  const userName = user["user_name"];
+  const displayName = user["display_name"];
+
+  return ({ id, userName, displayName });
 }

@@ -15,5 +15,6 @@ Pretty self explanatory, just a twitter clone using Next.js 13 on the frontend, 
 - [ ] Hashtags/Trending
 - [ ] Direct Messaging
 - [ ] User Tagging
-- [ ] Follow Recommendation
-- [ ] Tweet Recommendation
+- [ ] Follow Recommendation Algorithm
+- [ ] Tweet Recommendation Algorithm
+- [ ] Drafts
