@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 
 import { BsTwitter, BsBell, BsBookmark, BsPeople, BsPerson } from "react-icons/bs";
 import { BiHomeCircle, BiSearchAlt2, BiEnvelope } from "react-icons/bi";
@@ -10,8 +10,6 @@ import { type IconType } from "react-icons/lib/esm/iconBase";
 
 import TweetButtonComponent from "./TweetButtonComponent";
 import ToolTipComponent from "./ToolTipComponent";
-
-import getUserData from "@/lib/getUserData";
 
 type NavLink = {
   title: string,
@@ -54,8 +52,8 @@ const navLinks: NavLink[] = [
 ];
 
 export default async function NavComponent() {
-  const cookieStore = cookies();
-  const userData = await getUserData(cookieStore) as UserData;
+  const getCurrentUser = await fetch("http://localhost:3000/api/user", { headers: headers() });
+  const currentUser = await getCurrentUser.json();
 
   return (
     <header className="sticky top-0 h-screen">
@@ -76,7 +74,7 @@ export default async function NavComponent() {
           }
           <TweetButtonComponent />
         </div>
-        <ToolTipComponent userData={userData} />
+        <ToolTipComponent userData={currentUser} />
       </div>
     </header>
   )

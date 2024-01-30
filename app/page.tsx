@@ -12,6 +12,8 @@ export default async function Index() {
 
   if(isLoggedIn.session) redirect("/home");
 
+  if(error) console.error("IndexComponent Error: ", error);
+
   return (
         <FrontPage />
   )

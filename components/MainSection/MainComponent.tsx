@@ -1,6 +1,7 @@
 import WriteTweetComponent from "./WriteTweetComponent"
 import TweetsDisplayDashboard from "./TweetsDisplayDashboard";
 import WriteTweetInteractionComponent from "./WriteTweetInteractionComponent";
+import TweetReplyModal from "./TweetReplyModal";
 
 import { PostTweet } from "@/lib/ServerActions/TweetActions";
 
@@ -51,6 +52,7 @@ export default async function MainComponent(props: { userData: UserData, tweets:
           </form>
         </div>
       </div>
+      <TweetReplyModal userData={userData} />
       <TweetsDisplayDashboard tweets={tweets} userData={userData} />
     </>
   )

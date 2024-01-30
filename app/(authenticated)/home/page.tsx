@@ -1,14 +1,13 @@
 import MainComponent from "@/components/MainSection/MainComponent"
-import { cookies } from "next/headers";
-import getUserData from "@/lib/getUserData";
+import { headers } from "next/headers";
 import getLatestTweets from "@/lib/getLatestTweets";
 
 import type { UserData } from "@/lib/types/userdata.types";
 
 export default async function Home() {
-    const cookieStore = cookies();
-    const userData = await getUserData(cookieStore);
-    const currentUser = userData as UserData;
+    const getCurrentUser = await fetch("http://localhost:3000/api/user/", { headers: headers() });
+    const userData = await getCurrentUser.json();
+    const currentUser = userData;
     const getAllTweets = await getLatestTweets(currentUser);
 
     return (

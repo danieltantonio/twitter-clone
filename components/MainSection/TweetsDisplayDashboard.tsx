@@ -1,5 +1,4 @@
 import PostComponent from "./PostComponent";
-import TweetReplyModal from "./TweetReplyModal";
 
 import type { Tweet } from "@/lib/types/tweet.types"
 import type { UserData } from "@/lib/types/userdata.types"
@@ -9,7 +8,6 @@ export default function TweetsDisplayDashboard(props: { tweets: Tweet[], userDat
 
     return (
         <>
-            <TweetReplyModal userData={userData} />
             {
                 tweets.length && tweets.map((tweet) => {
                     return (
