@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 export async function LoginAction (formData: FormData) {
     const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient(cookieStore);
     const emailFormData = formData.get("email") as FormDataEntryValue;
     const passwordFormData = formData.get("password") as FormDataEntryValue;
     let email: string = emailFormData.toString();

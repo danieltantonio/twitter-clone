@@ -4,7 +4,7 @@ import Button from "../../Inputs/Buttons/Button";
 import { SignupForm } from "@/lib/types/signupform.types";
 import { FormEvent, useState, useEffect } from "react";
 import * as EmailValidator from "email-validator";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@material-tailwind/react";
 
@@ -14,7 +14,7 @@ import SignUpStepThree from "./SignUpStepThree";
 
 export default function SignupModal(props: { handleInputClickStepThree: () => void, signupForm: SignupForm, signupStep: number, handleSignupStep: () => void, handleSignupForm: (formData: { value: string, name: string }) => void }) {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
   const [signupLoading, setSignupLoading] = useState(false);

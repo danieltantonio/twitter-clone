@@ -4,16 +4,26 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
     const cookieStore = cookies();
-    const supabase = createClient(cookieStore);
+    const supabase = await createClient(cookieStore);
 
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getSession();
 
-    if(!data.user) {
-        return NextResponse.json({ "User Error": "Not logged in" });
+    if(error) {
+        console.error("/api/user ERROR:", error);
+        return NextResponse.json({ "API Error": "Please check console" });
+    }
+
+    // User is not logged in
+    if(!data.session) {
+        return NextResponse.json({
+            id: "",
+            userName: "",
+            displayName: ""
+        });
     }
     
-    if(data.user) {
-        const { data: userProfiles, error: sqlErr } = await supabase.from("profile").select("*").eq("user_name", data.user.user_metadata.user_name);
+    if(data.session) {
+        const { data: userProfiles, error: sqlErr } = await supabase.from("profile").select("*").eq("id", data.session.user.id);
         
         if(sqlErr) {
             console.error("/api/user/[username] SQL Error: ", sqlErr);
@@ -27,10 +37,5 @@ export async function GET(req: NextRequest) {
         const displayName = user["display_name"];
         
         return NextResponse.json({ id, userName, displayName });
-    }
-
-    if(error) {
-        console.error("/api/user ERROR:", error);
-        return NextResponse.json({ "API Error": "Please check console" });
     }
 }

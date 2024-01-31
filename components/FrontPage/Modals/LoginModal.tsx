@@ -4,7 +4,6 @@ import { Input } from "@material-tailwind/react";
 import ProviderLoginSignup from "@/components/Inputs/Buttons/ProviderLoginSignup";
 import Button from "@/components/Inputs/Buttons/Button";
 import { useState, FormEvent } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@material-tailwind/react";
 

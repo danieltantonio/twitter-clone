@@ -6,7 +6,7 @@ import FrontPage from "@/components/FrontPage/FrontPageComponent";
 
 export default async function Index() {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = await createClient(cookieStore);
 
   const { data: isLoggedIn, error } = await supabase.auth.getSession();
 
