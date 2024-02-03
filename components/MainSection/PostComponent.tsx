@@ -7,6 +7,7 @@ import { BsDot, BsThreeDots } from "react-icons/bs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import type { Tweet } from "@/lib/types/tweet.types";
 import type { UserData } from "@/lib/types/userdata.types";
@@ -25,7 +26,7 @@ export default function PostComponent(props: { tweet: Tweet, userData: UserData 
     <div className="flex flex-col cursor-pointer hover:bg-slate/5 relative" onClick={handleBackgroundClick}>
       <div className="flex flex-row border-slate/25 p-2 border-b-2">
         <div className="mx-2">
-          <div className="h-[40px] w-[40px] bg-slate rounded-full"></div>
+          <Image src={userData.avatarUrl} alt="" className="rounded-full" width={40} height={40}/>
         </div>
         <div className="flex flex-col w-full">
           <div className="ml-2">

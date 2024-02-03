@@ -7,8 +7,6 @@ import fgClick from "@/lib/onClickForeground";
 import { PostTweet } from "../../lib/ServerActions/TweetActions";
 import { useTweetReplyModalState } from "@/lib/store/tweetReplyModal";
 
-import { useState } from "react";
-
 import { CgClose } from "react-icons/cg";
 
 import type { UserData } from "@/lib/types/userdata.types";

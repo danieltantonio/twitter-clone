@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { MdDateRange } from "react-icons/md";
 
 import ProfileDashboardComponent from "@/components/Profile/ProfileDashboardComponent";
-import IconTimelineComponent from "@/components/Profile/IconTimelineComponent";
+import IconHeaderComponent from "@/components/Profile/IconHeaderComponent";
 
 import type { UserData } from "@/lib/types/userdata.types";
 
@@ -22,7 +22,7 @@ export default async function User({ params }: { params: { username: string } })
 
     const getCurrentUser = await fetch("http://localhost:3000/api/user", { headers: headers() });
     const currentUser = await getCurrentUser.json() as UserData;
-
+    
     switch (userJoinedMonth) {
         case 0:
             userJoinedMonth = "January";
@@ -76,7 +76,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <IconTimelineComponent currentUser={currentUser}/>
+            <IconHeaderComponent currentUser={currentUser} userProfile={userProfile} />
 
             <div className="flex flex-col ml-5 mb-5">
                 <span className="text-xl font-bold">{userProfile.displayName}</span>
@@ -97,7 +97,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent tweets={userPosts} userData={userProfile}/>
+            <ProfileDashboardComponent tweets={userPosts} userData={userProfile} />
         </div>
     )
 }

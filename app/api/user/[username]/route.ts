@@ -18,6 +18,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
     const userName = user["user_name"];
     const displayName = user["display_name"];
     const createdAt = user["created_at"];
+    const avatarUrl = user["avatar_url"];
+    const headerUrl = user["header_url"];
 
-    return NextResponse.json({ id, userName, displayName, createdAt });
+    return NextResponse.json({ id, userName, displayName, createdAt, avatarUrl, headerUrl });
 }
