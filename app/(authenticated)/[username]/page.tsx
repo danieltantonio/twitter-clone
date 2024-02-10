@@ -81,6 +81,9 @@ export default async function User({ params }: { params: { username: string } })
             <div className="flex flex-col ml-5 mb-5">
                 <span className="text-xl font-bold">{userProfile.displayName}</span>
                 <span className="text-sm text-slate/75">@{userProfile.userName}</span>
+                <div>
+                    <span>{userProfile.bio}</span>
+                </div>
                 <div className="flex flex-row my-2">
                     <MdDateRange className="text-xl mr-1 text-slate/75" />
                     <span className="font-light text-slate/75">Joined {userJoinedMonth} {userJoinedYear}</span>

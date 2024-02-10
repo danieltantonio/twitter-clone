@@ -12,10 +12,13 @@ Pretty self explanatory, just a twitter clone using Next.js 13 on the frontend, 
 - [ ] Reply feature
 - [x] User profiles
 - [ ] Private profiles
-- [ ] Picture/Video uploading
+- [ ] Picture/Video uploading (Currently only works with Edit Profile feature)
 - [ ] Hashtags/Trending
 - [ ] Direct Messaging
 - [ ] User Tagging
 - [ ] Follow Recommendation Algorithm
 - [ ] Tweet Recommendation Algorithm
 - [ ] Drafts
+- [x] Edit profile feature
+- [ ] On signup edit profile
+- [ ] Login incorrect data

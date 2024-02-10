@@ -9,6 +9,7 @@ export const profile = pgTable("profile", {
     updatedAt: timestamp("updated_at").notNull(),
     avatarUrl: text("avatar_url").default("https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/avatar/default.jpg").notNull(),
     headerUrl: text("header_url").default("https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/header/default.jpg").notNull(),
+    bio: text("bio").default("").notNull(),
 });
 
 export const tweet = pgTable("tweet", {

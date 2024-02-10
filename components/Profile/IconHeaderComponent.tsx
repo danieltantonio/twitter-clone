@@ -1,9 +1,11 @@
 import Image from "next/image";
+import EditProfileButton from "./EditProfileButton";
+
 import type { UserData } from "@/lib/types/userdata.types";
-import EditProfileModal from "./Modals/EditProfileModal";
 
 export default function IconHeaderComponent(props: { currentUser: UserData, userProfile: UserData }) {
     const { currentUser, userProfile } = props;
+
     return (
         <>
             <div className="w-full relative">
@@ -27,7 +29,7 @@ export default function IconHeaderComponent(props: { currentUser: UserData, user
 
             {
                 currentUser.userName === userProfile.userName && (
-                    <EditProfileModal currentUser={currentUser}/>
+                    <EditProfileButton currentUser={currentUser} />
                 )
             }
         </>
