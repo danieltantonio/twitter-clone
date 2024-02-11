@@ -20,12 +20,12 @@ function HomeOption(props: { label: string, className?: string }): JSX.Element {
   )
 }
 
-export default async function MainComponent(props: { userData: UserData, tweets: Tweet[] }) {
-  const { userData, tweets } = props;
+export default async function MainComponent(props: { currentUser: UserData, tweets: Tweet[] }) {
+  const { tweets, currentUser } = props;
 
   async function handlePostTweetServerAction(formData: FormData) {
     "use server";
-    await PostTweet(formData, userData.id);
+    await PostTweet(formData, currentUser.id);
   }
 
   return (
@@ -51,7 +51,7 @@ export default async function MainComponent(props: { userData: UserData, tweets:
           </form>
         </div>
       </div>
-      <TweetsDisplayDashboard tweets={tweets} userData={userData} />
+      <TweetsDisplayDashboard tweets={tweets} currentUser={currentUser} />
     </>
   )
 }

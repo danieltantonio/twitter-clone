@@ -12,6 +12,12 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
         return NextResponse.json({ "API Error": "SQL Error, check console." });
     }
 
+    if(!userProfiles.length) {
+        return NextResponse.json({ Error: "User does not exist" }, {
+            status: 404
+        });
+    }
+
     const users = userProfiles as any[];
     const user = users[0];
     const id = user.id;

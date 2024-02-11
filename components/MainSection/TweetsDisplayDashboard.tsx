@@ -4,16 +4,16 @@ import TweetReplyModal from "./TweetReplyModal";
 import type { Tweet } from "@/lib/types/tweet.types"
 import type { UserData } from "@/lib/types/userdata.types"
 
-export default function TweetsDisplayDashboard(props: { tweets: Tweet[], userData: UserData }) {
-    const { tweets, userData } = props;
+export default function TweetsDisplayDashboard(props: { tweets: Tweet[], currentUser: UserData }) {
+    const { tweets, currentUser } = props;
 
     return (
         <>
-            <TweetReplyModal userData={userData} />
+            <TweetReplyModal currentUser={currentUser} />
             {
                 tweets.length && tweets.map((tweet) => {
                     return (
-                        <PostComponent key={tweet.id} tweet={tweet} userData={userData} />
+                        <PostComponent key={tweet.id} tweet={tweet} currentUser={currentUser} />
                     )
                 })
             }

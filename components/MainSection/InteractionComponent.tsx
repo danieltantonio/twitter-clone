@@ -15,8 +15,8 @@ import { useState, useMemo } from "react";
 import type { Tweet } from "@/lib/types/tweet.types";
 import type { UserData } from "@/lib/types/userdata.types";
 
-export default function InteractionComponent(props: { tweet: Tweet, userData: UserData }) {
-    const { tweet, userData } = props;
+export default function InteractionComponent(props: { tweet: Tweet, currentUser: UserData }) {
+    const { tweet, currentUser } = props;
     const [likes, setLikes] = useState(parseInt(tweet.likeCount));
     const [replies, setReplies] = useState(parseInt(tweet.replyCount));
     const [likedPost, setLikedPost] = useState(false);
@@ -28,7 +28,7 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
             const { data, error } = await supabase
                 .from("like")
                 .insert([
-                    { user_id: userData.id, tweet_id: tweet.id }
+                    { user_id: currentUser.id, tweet_id: tweet.id }
                 ])
                 .select();
 
@@ -45,7 +45,7 @@ export default function InteractionComponent(props: { tweet: Tweet, userData: Us
             await supabase
                 .from("like")
                 .delete()
-                .eq("user_id", userData.id)
+                .eq("user_id", currentUser.id)
                 .eq("tweet_id", tweet.id);
 
             setLikedPost(false);

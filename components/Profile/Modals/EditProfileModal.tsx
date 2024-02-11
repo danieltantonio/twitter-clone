@@ -13,13 +13,11 @@ export default function EditProfileModal(
     props: {
         openEditProfile: boolean
         currentUser: UserData,
-        openEditProfileModal: boolean,
         closeModal: () => void,
     }
 ) {
-    if (!props.openEditProfile) return null;
 
-    const { currentUser, openEditProfileModal, closeModal } = props;
+    const { currentUser, closeModal } = props;
     const initEditMedia: EditMedia = { editMediaAvatar: false, editMediaHeader: false };
     const initProfileData: ProfileData = { avatar: currentUser.avatarUrl, header: currentUser.headerUrl, name: currentUser.displayName, bio: currentUser.bio };
     const [editMedia, setEditMedia] = useState(initEditMedia);
@@ -49,40 +47,34 @@ export default function EditProfileModal(
     return (
         <>
             {
-                openEditProfileModal && (
-                    <>
-                        {
-                            (!editMedia.editMediaAvatar && !editMedia.editMediaHeader) && (
-                                <EditProfileMain
-                                    profileData={profileData}
-                                    closeModal={closeModal}
-                                    handleAvatar={handleAvatar}
-                                    handleEditMediaAvatar={handleEditMediaAvatar}
-                                    handleHeader={handleHeader}
-                                    handleEditMediaHeader={handleEditMediaHeader}
-                                    onChangeProfileData={onChangeProfileData}
-                                />
-                            )
-                        }
-                        {
-                            (editMedia.editMediaAvatar && !editMedia.editMediaHeader) && (
-                                <EditMediaAvatarModal
-                                    profileData={profileData}
-                                    handleAvatar={handleAvatar}
-                                    handleEditMediaAvatar={handleEditMediaAvatar}
-                                />
-                            )
-                        }
-                        {
-                            (!editMedia.editMediaAvatar && editMedia.editMediaHeader) && (
-                                <EditMediaHeaderModal
-                                    profileData={profileData}
-                                    handleHeader={handleHeader}
-                                    handleEditMediaHeader={handleEditMediaHeader}
-                                />
-                            )
-                        }
-                    </>
+                (!editMedia.editMediaAvatar && !editMedia.editMediaHeader) && (
+                    <EditProfileMain
+                        profileData={profileData}
+                        closeModal={closeModal}
+                        handleAvatar={handleAvatar}
+                        handleEditMediaAvatar={handleEditMediaAvatar}
+                        handleHeader={handleHeader}
+                        handleEditMediaHeader={handleEditMediaHeader}
+                        onChangeProfileData={onChangeProfileData}
+                    />
+                )
+            }
+            {
+                (editMedia.editMediaAvatar && !editMedia.editMediaHeader) && (
+                    <EditMediaAvatarModal
+                        profileData={profileData}
+                        handleAvatar={handleAvatar}
+                        handleEditMediaAvatar={handleEditMediaAvatar}
+                    />
+                )
+            }
+            {
+                (!editMedia.editMediaAvatar && editMedia.editMediaHeader) && (
+                    <EditMediaHeaderModal
+                        profileData={profileData}
+                        handleHeader={handleHeader}
+                        handleEditMediaHeader={handleEditMediaHeader}
+                    />
                 )
             }
         </>

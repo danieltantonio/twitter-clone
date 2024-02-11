@@ -11,6 +11,6 @@ export default async function Home() {
     const allTweets = await getAllTweets.json();
 
     return (
-        <MainComponent userData={currentUser} tweets={allTweets} />
+        <MainComponent currentUser={currentUser} tweets={allTweets} />
     )
 }

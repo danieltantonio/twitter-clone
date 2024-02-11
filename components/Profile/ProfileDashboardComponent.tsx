@@ -10,8 +10,8 @@ import type { UserData } from "@/lib/types/userdata.types";
 type TabSelect = "Posts" | "Replies" | "Media" | "Likes";
 const tabSelectInit: TabSelect = "Posts";
 
-export default function ProfileDashboardComponent(props: { tweets: Tweet[], userData: UserData }) {
-  const { tweets, userData } = props;
+export default function ProfileDashboardComponent(props: { tweets: Tweet[], userData: UserData, currentUser: UserData }) {
+  const { tweets, userData, currentUser } = props;
   const [tab, setTab] = useState(tabSelectInit);
 
   function handleClickTab(tabName: TabSelect) {
@@ -49,13 +49,13 @@ export default function ProfileDashboardComponent(props: { tweets: Tweet[], user
 
       {
         tab === "Posts" && (
-          <TweetsDisplayDashboard tweets={tweets} userData={userData} />
+          <TweetsDisplayDashboard tweets={tweets} userData={userData} currentUser={currentUser} />
         )
       }
 
       {
         tab === "Replies" && (
-          <TweetsDisplayDashboard tweets={tweets} userData={userData} />
+          <TweetsDisplayDashboard tweets={tweets} userData={userData} currentUser={currentUser} />
         )
       }
     </div>

@@ -7,10 +7,10 @@ export default function SignUpStepTwo(props: { onFormChange: (e: FormEvent<HTMLI
     return (
         <>
             <div className="my-2">
-                <Input name="password" type="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" onInput={onFormChange} value={password}/>
+                <Input name="password" type="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" onChange={onFormChange} value={password}/>
             </div>
             <div className="my-2">
-                <Input name="confirmPass" type="password" color="blue" size="lg" label="Confirm Password" className="text-white text-xl h-[50px]" onInput={onFormChange} value={confirmPass}/>
+                <Input name="confirmPass" type="password" color="blue" size="lg" label="Confirm Password" className="text-white text-xl h-[50px]" onChange={onFormChange} value={confirmPass}/>
             </div>
         </>
     )

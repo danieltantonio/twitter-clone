@@ -1,7 +1,8 @@
 export type Profile = {
-  authorID: string,
   authorDisplayName: string,
-  authorUserName: string
+  authorUserName: string,
+  authorAvatarUrl: string,
+  authorHeaderUrl: string
 }
 
 export type Tweet = {

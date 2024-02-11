@@ -11,8 +11,8 @@ import { CgClose } from "react-icons/cg";
 
 import type { UserData } from "@/lib/types/userdata.types";
 
-export default function TweetReplyModal(props: { userData: UserData }) {
-    const { userData } = props;
+export default function TweetReplyModal(props: { currentUser: UserData }) {
+    const { currentUser } = props;
     const { tweetModal, replyModal, setTweetModal, setReplyModal } = useTweetReplyModalState();
     
     function closeTweetModal() {
@@ -21,7 +21,7 @@ export default function TweetReplyModal(props: { userData: UserData }) {
     }
 
     async function handlePostTweetServerAction(formData: FormData) {
-        const createdTweet = await PostTweet(formData, userData.id);
+        const createdTweet = await PostTweet(formData, currentUser.id);
         closeTweetModal();
     }
 

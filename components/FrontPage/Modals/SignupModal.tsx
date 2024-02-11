@@ -14,7 +14,6 @@ import SignUpStepThree from "./SignUpStepThree";
 
 export default function SignupModal(props: { handleInputClickStepThree: () => void, signupForm: SignupForm, signupStep: number, handleSignupStep: () => void, handleSignupForm: (formData: { value: string, name: string }) => void }) {
   const router = useRouter();
-  const supabase = createClient();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
   const [signupLoading, setSignupLoading] = useState(false);
@@ -41,6 +40,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   async function handleSignup() {
     const { email, name, password } = signupForm;
+    const supabase = await createClient();
 
     setSignupLoading(true);
 
@@ -55,7 +55,12 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
       }
     });
 
-    if(data.user) router.push("/home");
+    if (error) {
+      console.error("Sign up error: ", error)
+    } else {
+      if (data.user) router.push("/home");
+    }
+
   }
 
   useEffect(() => {

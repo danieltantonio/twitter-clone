@@ -14,19 +14,19 @@ import type { UserData } from "@/lib/types/userdata.types";
 
 dayjs.extend(relativeTime);
 
-export default function PostComponent(props: { tweet: Tweet, userData: UserData }) {
-  const { tweet, userData } = props;
+export default function PostComponent(props: { tweet: Tweet, currentUser: UserData }) {
+  const { tweet, currentUser } = props;
   const router = useRouter();
 
   function handleBackgroundClick() {
-    router.push(`/${userData.userName}/status/${tweet.id}`);
+    router.push(`/${tweet.authorInfo.authorUserName}/status/${tweet.id}`);
   }
 
   return (
     <div className="flex flex-col cursor-pointer hover:bg-slate/5 relative" onClick={handleBackgroundClick}>
       <div className="flex flex-row border-slate/25 p-2 border-b-2">
         <div className="mx-2">
-          <Image src={userData.avatarUrl} alt="" className="rounded-full" width={40} height={40}/>
+          <Image src={tweet.authorInfo.authorAvatarUrl} alt="" className="rounded-full" width={40} height={40}/>
         </div>
         <div className="flex flex-col w-full">
           <div className="ml-2">
@@ -48,7 +48,7 @@ export default function PostComponent(props: { tweet: Tweet, userData: UserData 
             </div>
           </div>
           <div>
-            <InteractionComponent tweet={tweet} userData={userData} />
+            <InteractionComponent tweet={tweet} currentUser={currentUser} />
           </div>
         </div>
       </div>

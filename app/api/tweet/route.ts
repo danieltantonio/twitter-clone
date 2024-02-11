@@ -20,9 +20,10 @@ export async function GET(req: NextRequest) {
     const getAllTweets = await db.select({
         id: schemas.tweet.id,
         authorInfo: {
-            authorID: sql<string>`${schemas.tweet.profileID}`,
             authorDisplayName: sql<string>`${schemas.profile.displayName}`,
             authorUserName: sql<string>`${schemas.profile.userName}`,
+            authorAvatarUrl: sql<string>`${schemas.profile.avatarUrl}`,
+            authorHeaderUrl: sql<string>`${schemas.profile.headerUrl}`,
         },
         textContent: schemas.tweet.postContent,
         likeCount: sql<string>`COUNT(${schemas.like.id})`,

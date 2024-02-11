@@ -1,5 +1,6 @@
 import { IoArrowBackOutline } from "react-icons/io5";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 
 import { MdDateRange } from "react-icons/md";
 
@@ -12,7 +13,11 @@ export default async function User({ params }: { params: { username: string } })
     const { username } = params;
 
     const getUserProfileData = await fetch(`http://localhost:3000/api/user/${username}`);
-    const userProfile = await getUserProfileData.json() as UserData;
+
+    if(!getUserProfileData.ok) notFound();
+
+    const userProfile = await getUserProfileData.json();
+
     const userJoinedDate = new Date(userProfile.createdAt);
     const userJoinedYear = userJoinedDate.getFullYear();
     let userJoinedMonth: number | string = userJoinedDate.getMonth();
@@ -100,7 +105,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent tweets={userPosts} userData={userProfile} />
+            <ProfileDashboardComponent tweets={userPosts} userData={userProfile} currentUser={currentUser} />
         </div>
     )
 }

@@ -20,12 +20,15 @@ export default function EditProfileButton(props: { currentUser: UserData, }) {
 
     return (
         <>
-            <EditProfileModal
-                openEditProfile={openEditProfile}
-                currentUser={currentUser}
-                openEditProfileModal={openEditProfile}
-                closeModal={closeModal}
-            />
+            {
+                (openEditProfile) && (
+                    <EditProfileModal
+                        openEditProfile={openEditProfile}
+                        currentUser={currentUser}
+                        closeModal={closeModal}
+                    />
+                )
+            }
             <div className="w-full">
                 <span className="float-right border rounded-full font-semibold border-slate/75 px-4 py-2 mt-2 mb-5 mx-2" onClick={openModal}>Edit Profile</span>
             </div>
