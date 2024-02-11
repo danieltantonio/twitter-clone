@@ -105,7 +105,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent tweets={userPosts} userData={userProfile} currentUser={currentUser} />
+            <ProfileDashboardComponent tweets={userPosts} currentUser={currentUser} />
         </div>
     )
 }

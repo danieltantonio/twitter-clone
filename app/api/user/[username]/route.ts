@@ -1,9 +1,11 @@
-import { createClient } from "@/lib/supabase/client";
 import { NextResponse, type NextRequest } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest, { params }: { params: { username: string }}) {
     const { username } = params;
-    const supabase = await createClient();
+    const cookieStore = cookies();
+    const supabase = await createClient(cookieStore);
     
     const { data: userProfiles, error: sqlErr } = await supabase.from("profile").select("*").eq("user_name", username);
 
