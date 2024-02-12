@@ -1,22 +1,27 @@
 "use client"
 
-import Button from "../../Inputs/Buttons/Button";
-import { SignupForm } from "@/lib/types/signupform.types";
-import { FormEvent, useState, useEffect } from "react";
-import * as EmailValidator from "email-validator";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Spinner } from "@material-tailwind/react";
+import * as EmailValidator from "email-validator";
+import { useRouter } from "next/navigation";
 
+import { createClient } from "@/lib/supabase/client";
+
+import Button from "../../Inputs/Buttons/Button";
 import SignUpStepOne from "./SignUpStepOne";
 import SignUpStepTwo from "./SignUpStepTwo";
 import SignUpStepThree from "./SignUpStepThree";
+
+import type { SignupForm } from "@/lib/types/signupform.types";
 
 export default function SignupModal(props: { handleInputClickStepThree: () => void, signupForm: SignupForm, signupStep: number, handleSignupStep: () => void, handleSignupForm: (formData: { value: string, name: string }) => void }) {
   const router = useRouter();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
   const [signupLoading, setSignupLoading] = useState(false);
+  const [isUniqueUsername, setIsUniqueUsername] = useState(false);
+  const [isUniqueEmail, setIsUniqueEmail] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleFormChange(formData: { value: string, name: string }) {
     const { value, name } = formData;
@@ -24,18 +29,13 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
   }
 
   function handleNextStep(isValidEmail: boolean, isValidUsername: boolean, isValidPassword: boolean, isValidConfirmPass: boolean) {
-    if (signupStep === 1 && isValidEmail && isValidUsername) {
+    if (signupStep === 1 && isValidEmail && isValidUsername && !isLoading) {
       setNextStep(false);
-    } else if (signupStep === 2 && isValidPassword && isValidConfirmPass) {
+    } else if (signupStep === 2 && isValidPassword && isValidConfirmPass && !isLoading) {
       setNextStep(false);
     } else {
       setNextStep(true);
     }
-  }
-
-  function onFormChange(e: any) { // FIX ME
-    const { value, name } = e.target;
-    handleFormChange({ value, name });
   }
 
   async function handleSignup() {
@@ -63,15 +63,33 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   }
 
+  function handleUniqueUsername(uniqueUsername: boolean) {
+    setIsUniqueUsername(uniqueUsername);
+  }
+
+  function handleUniqueEmail(uniqueEmail: boolean) {
+    setIsUniqueEmail(uniqueEmail);
+  }
+
+  async function onFormChange(e: any) { // FIX ME
+    const { value, name } = e.target;
+    if(name === "name" || name === "email") handleLoading(true);
+    handleFormChange({ value, name });
+  }
+
+  function handleLoading(loadingState: boolean) {
+    setIsLoading(loadingState);
+  }
+
   useEffect(() => {
-    const isValidName = signupForm.name.length >= 6 && signupForm.name.length <= 12;
-    const isValidEmail: boolean = EmailValidator.validate(signupForm.email);
+    const isValidName = signupForm.name.length >= 6 && signupForm.name.length <= 12 && isUniqueUsername;
+    const isValidEmail: boolean = EmailValidator.validate(signupForm.email) && isUniqueEmail;
     const isValidPassword = signupForm.password.length >= 6 && signupForm.password.length <= 12;
     const isValidConfirmPass = signupForm.confirmPass === signupForm.password;
 
     handleNextStep(isValidName, isValidEmail, isValidPassword, isValidConfirmPass);
 
-  }, [signupForm, signupStep]);
+  }, [signupForm, signupStep, isUniqueUsername, isUniqueEmail]);
 
   return (
     <div className="mx-auto w-3/4 flex flex-col relative">
@@ -90,7 +108,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
         </span>
       </div>
       {
-        signupStep === 1 && <SignUpStepOne email={signupForm.email} name={signupForm.name} onFormChange={onFormChange} />
+        signupStep === 1 && <SignUpStepOne email={signupForm.email} name={signupForm.name} onFormChange={onFormChange} handleUniqueUsername={handleUniqueUsername} handleUniqueEmail={handleUniqueEmail} handleLoading={handleLoading}/>
       }
       {
         signupStep === 2 && <SignUpStepTwo password={signupForm.password} confirmPass={signupForm.confirmPass} onFormChange={onFormChange} />
