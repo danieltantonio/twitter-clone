@@ -11,11 +11,13 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
 
     if(sqlErr) {
         console.error("/api/user/[username] SQL Error: ", sqlErr);
-        return NextResponse.json({ "API Error": "SQL Error, check console." });
+        return NextResponse.json({ data: null, error: "Database Server error. Check console." }, {
+            status: 500
+        });
     }
 
     if(!userProfiles.length) {
-        return NextResponse.json({ Error: "User does not exist" }, {
+        return NextResponse.json({ data: null, error: "User does not exist" }, {
             status: 404
         });
     }
