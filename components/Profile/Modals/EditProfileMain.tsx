@@ -39,6 +39,7 @@ export default function EditProfileMain(props: {
 
     const defaultAvatar = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/avatar/default.jpg";
     const defaultHeader = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/header/default.jpg";
+    const origin = window.location.origin;
 
     function handleClickAvatar() {
         if (hiddenAvatarFileInput.current) hiddenAvatarFileInput.current.click();
@@ -98,7 +99,7 @@ export default function EditProfileMain(props: {
         formData.append("name", profileData.name);
         formData.append("bio", profileData.bio);
 
-        await fetch("http://localhost:3000/api/user/edit_profile", {
+        await fetch(`${origin}/api/user/edit_profile`, {
             method: "POST",
             credentials: "same-origin",
             body: formData

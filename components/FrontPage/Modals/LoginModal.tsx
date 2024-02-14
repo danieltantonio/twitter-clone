@@ -3,7 +3,7 @@
 import { Input } from "@material-tailwind/react";
 import ProviderLoginSignup from "@/components/Inputs/Buttons/ProviderLoginSignup";
 import Button from "@/components/Inputs/Buttons/Button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@material-tailwind/react";
 
@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginModal() {
     const [isLoading, setIsLoading] = useState(false);
+    const hiddenSubmitBtn = useRef<HTMLButtonElement>(null);
     const router = useRouter();
 
     async function handleLoginAction(formData: FormData) {
@@ -42,6 +43,10 @@ export default function LoginModal() {
         }
     }
 
+    function handleClickLogin() {
+        if(hiddenSubmitBtn.current) hiddenSubmitBtn.current.click();
+    }
+
     return (
         <div className="w-3/5 mx-auto px-8 relative">
             <div className="my-8">
@@ -67,7 +72,8 @@ export default function LoginModal() {
                 <div className="mb-8">
                     <Input type="password" name="password" color="blue" size="lg" label="Password" className="text-white text-xl h-[50px]" />
                 </div>
-                <Button className="bg-white/90 my-4 text-black font-bold"><button type="submit">Login</button></Button>
+                <Button className="bg-white/90 my-4 text-black font-bold" onClick={handleClickLogin}>Login</Button>
+                <button ref={hiddenSubmitBtn} type="submit" className="hidden"></button>
             </form>
             <Button className="border border-slate/75 text-white">Forgot Password?</Button>
             <div className="my-10 pb-20 text-sm">
