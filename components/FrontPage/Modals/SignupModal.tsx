@@ -49,7 +49,8 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
       password,
       options: {
         data: {
-          user_name: name
+          user_name: name,
+          email: email
         },
         emailRedirectTo: `${location.origin}/home`
       }
