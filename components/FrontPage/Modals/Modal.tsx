@@ -86,7 +86,7 @@ export default function Modal(props: { className: string, open: boolean, handleC
     return (
         <Dialog open={open} onClose={handleCloseModal} className={`absolute top-0 left-0 bg-slate/40 w-screen h-screen ${className}`}>
             <div className="relative">
-                <Dialog.Panel className="absolute top-36 left-1/3 bg-black w-[600px] rounded-2xl py-2">
+                <Dialog.Panel className="absolute top-24 left-1/3 bg-black w-[600px] rounded-2xl py-2">
                     <div className="flex flex-col">
                         <div className="flex flex-row mb-3">
                             <div className="relative">

@@ -5,7 +5,6 @@ import { BsTwitter, BsBell, BsBookmark, BsPeople, BsPerson } from "react-icons/b
 import { BiHomeCircle, BiSearchAlt2, BiEnvelope } from "react-icons/bi";
 import { PiDotsThreeCircle } from "react-icons/pi";
 
-import { type UserData } from "@/lib/types/userdata.types";
 import { type IconType } from "react-icons/lib/esm/iconBase";
 
 import TweetButtonComponent from "./TweetButtonComponent";
@@ -52,7 +51,9 @@ const navLinks: NavLink[] = [
 ];
 
 export default async function NavComponent() {
-  const getCurrentUser = await fetch("http://localhost:3000/api/user", { headers: headers() });
+  const headersList = headers();
+  const origin = headersList.get("host");
+  const getCurrentUser = await fetch(`http://${origin}/api/user`, { headers: headers() });
   const currentUser = await getCurrentUser.json();
 
   return (
