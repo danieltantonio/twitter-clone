@@ -11,10 +11,9 @@ import type { UserData } from "@/lib/types/userdata.types";
 
 export default async function User({ params }: { params: { username: string } }) {
     const { username } = params;
-    const headersList = headers();
-    const origin = headersList.get("host");
+    const origin = process.env.NEXT_URL || "http://localhost:3000";
 
-    const getUserProfileData = await fetch(`http://${origin}/api/user/${username}`);
+    const getUserProfileData = await fetch(`${origin}/api/user/${username}`);
 
     if(!getUserProfileData.ok) notFound();
 
@@ -24,10 +23,10 @@ export default async function User({ params }: { params: { username: string } })
     const userJoinedYear = userJoinedDate.getFullYear();
     let userJoinedMonth: number | string = userJoinedDate.getMonth();
 
-    const getUserPosts = await fetch(`http://${origin}/api/tweet/${username}`, { headers: headers() });
+    const getUserPosts = await fetch(`${origin}/api/tweet/${username}`, { headers: headers() });
     const userPosts = await getUserPosts.json();
 
-    const getCurrentUser = await fetch(`http://${origin}/api/user`, { headers: headers() });
+    const getCurrentUser = await fetch(`${origin}/api/user`, { headers: headers() });
     const currentUser = await getCurrentUser.json() as UserData;
     
     switch (userJoinedMonth) {

@@ -6,6 +6,13 @@ export async function middleware(req: NextRequest) {
 
   await supabase.auth.getSession();
 
+  // Modify the Access-Control-Allow-Origin header
+  response.headers.set("Access-Control-Allow-Origin", "*");
+
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  response.headers.set("Access-Control-Max-Age", "86400");
+
   return response;
 }
 
@@ -19,5 +26,6 @@ export const config = {
      * Feel free to modify this pattern to include more paths.
      */
     "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/api/:path*"
   ],
 };

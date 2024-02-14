@@ -51,9 +51,8 @@ const navLinks: NavLink[] = [
 ];
 
 export default async function NavComponent() {
-  const headersList = headers();
-  const origin = headersList.get("host");
-  const getCurrentUser = await fetch(`http://${origin}/api/user`, { headers: headers() });
+  const origin = process.env.NEXT_URL || "http://localhost:3000"
+  const getCurrentUser = await fetch(`${origin}/api/user`, { headers: headers() });
   const currentUser = await getCurrentUser.json();
 
   return (
