@@ -7,7 +7,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@material-tailwind/react";
 
-import { LoginAction } from "@/lib/ServerActions/AuthActions";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginModal() {
     const [isLoading, setIsLoading] = useState(false);
@@ -16,8 +16,31 @@ export default function LoginModal() {
 
     async function handleLoginAction(formData: FormData) {
         setIsLoading(true);
-        await LoginAction(formData);
-        router.push("/home");
+        const supabase = await createClient();
+        const objData = Object.fromEntries(formData);
+
+        if(!objData.email || !objData.password) {
+            setIsLoading(false);
+            alert("Missing email or login fields");
+        }
+
+        const email = objData.email as string;
+        const password = objData.password as string;
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if(error) {
+            setIsLoading(false);
+            if(error.status === 400) {
+                alert("Invalid login credentials");
+            } else {
+                alert("Server error, failed to log you in.");
+            }
+        }
+
+        if(data.session) {
+            router.push("/home");
+        }
     }
 
     function handleClickLogin() {
