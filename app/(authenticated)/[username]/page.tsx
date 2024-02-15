@@ -1,5 +1,5 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { MdDateRange } from "react-icons/md";
@@ -12,6 +12,8 @@ import type { UserData } from "@/lib/types/userdata.types";
 export default async function User({ params }: { params: { username: string } }) {
     const { username } = params;
     const origin = process.env.NEXT_URL || "http://localhost:3000";
+    const cookieName = process.env.SUPABASE_COOKIE_NAME as string;
+    const cookieVal = cookies().get(cookieName)?.value as string;
 
     const getUserProfileData = await fetch(`${origin}/api/user/${username}`);
 
@@ -23,10 +25,19 @@ export default async function User({ params }: { params: { username: string } })
     const userJoinedYear = userJoinedDate.getFullYear();
     let userJoinedMonth: number | string = userJoinedDate.getMonth();
 
-    const getUserPosts = await fetch(`${origin}/api/tweet/${username}`, { headers: headers() });
+    const getUserPosts = await fetch(`${origin}/api/tweet/${username}`, { 
+        headers: {
+            Cookie: `${cookieName}=${cookieVal}`
+        }
+    });
+
     const userPosts = await getUserPosts.json();
 
-    const getCurrentUser = await fetch(`${origin}/api/user`, { headers: headers() });
+    const getCurrentUser = await fetch(`${origin}/api/user`, { 
+        headers: {
+            Cookie: `${cookieName}=${cookieVal}`
+        }
+     });
     const currentUser = await getCurrentUser.json() as UserData;
     
     switch (userJoinedMonth) {
