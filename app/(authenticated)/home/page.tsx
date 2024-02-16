@@ -1,29 +1,32 @@
 import MainComponent from "@/components/MainSection/MainComponent"
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import type { UserData } from "@/lib/types/userdata.types";
+import { createClient } from "@/lib/supabase/server";
+import { getUserSessionID, getUserDataByID } from "@/lib/getUserData";
+
 
 export default async function Home() {
-    const origin = process.env.NEXT_URL || "http://localhost:3000/";
-    const cookieName = process.env.SUPABASE_COOKIE_NAME as string;
-    const cookieVal = cookies().get(cookieName)?.value;
-     
+    const cookieStore = cookies();
+    const supabase = await createClient(cookieStore);
 
-    const getCurrentUser = await fetch(`${origin}/api/user/`, { 
-        headers: {
-            Cookie: `${cookieName}=${cookieVal}`
-        }
-    });
-    const userData = await getCurrentUser.json() as UserData;
-    const currentUser = userData;
-    const getAllTweets = await fetch(`${origin}/api/tweet/`, { 
-        headers: {
-            Cookie: `${cookieName}=${cookieVal}`
-        } 
-    });
-    const allTweets = await getAllTweets.json();
+    const session = await getUserSessionID(supabase);
+
+    if(!session) {
+        console.error("[/home getUserSessionID() Error]: Check logs.");
+        return null;
+    }
+
+    if(!session.id) redirect("/");
+
+    const currentUser = await getUserDataByID(supabase, session.id);
+
+    if(!currentUser) {
+        console.error("[/home getUserDataByID() Error]: Check logs.");
+        return null;
+    }
 
     return (
-        <MainComponent currentUser={currentUser} tweets={allTweets} />
+        <MainComponent currentUser={currentUser} />
     )
 }

@@ -1,13 +1,11 @@
 import { IoArrowBackOutline } from "react-icons/io5";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { redirect } from "next/navigation";
 
 import { MdDateRange } from "react-icons/md";
 
 import { createClient } from "@/lib/supabase/server";
 import { getUserDataByID, getUserSessionID, getUserDataByUsername } from "@/lib/getUserData";
-import getUserPosts from "@/lib/getUserPosts";
 
 import ProfileDashboardComponent from "@/components/Profile/ProfileDashboardComponent";
 import IconHeaderComponent from "@/components/Profile/IconHeaderComponent";
@@ -40,11 +38,16 @@ export default async function User({ params }: { params: { username: string } })
         return null;
     }
 
-    const userPosts: Tweet[] = await getUserPosts(username, currentUser.id);
-
     const userJoinedDate = new Date(userProfile.createdAt);
     const userJoinedYear = userJoinedDate.getFullYear();
     let userJoinedMonth: number | string = userJoinedDate.getMonth();
+
+    const { data: userPosts, error: tweetsErr } = await supabase.from("tweet").select("id").eq("profile_id", userProfile.id);
+
+    if(tweetsErr) {
+        console.error("[DB Server Error]: ", tweetsErr);
+        return null;
+    }
 
     switch (userJoinedMonth) {
         case 0:
@@ -123,7 +126,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent tweets={userPosts} currentUser={currentUser} />
+            <ProfileDashboardComponent currentUser={currentUser} />
         </div>
     )
 }
