@@ -11,7 +11,6 @@ import ProfileDashboardComponent from "@/components/Profile/ProfileDashboardComp
 import IconHeaderComponent from "@/components/Profile/IconHeaderComponent";
 
 import type { UserData } from "@/lib/types/userdata.types";
-import type { Tweet } from "@/lib/types/tweet.types";
 
 export default async function User({ params }: { params: { username: string } }) {
     const { username } = params;
@@ -126,7 +125,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent currentUser={currentUser} />
+            <ProfileDashboardComponent currentUser={currentUser} username={username} />
         </div>
     )
 }
