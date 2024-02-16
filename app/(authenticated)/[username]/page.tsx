@@ -1,35 +1,51 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { MdDateRange } from "react-icons/md";
+
+import { createClient } from "@/lib/supabase/server";
+import { getUserDataByID, getUserSessionID, getUserDataByUsername } from "@/lib/getUserData";
+import getUserPosts from "@/lib/getUserPosts";
 
 import ProfileDashboardComponent from "@/components/Profile/ProfileDashboardComponent";
 import IconHeaderComponent from "@/components/Profile/IconHeaderComponent";
 
 import type { UserData } from "@/lib/types/userdata.types";
+import type { Tweet } from "@/lib/types/tweet.types";
 
 export default async function User({ params }: { params: { username: string } }) {
     const { username } = params;
-    const headersList = headers();
-    const origin = headersList.get("host");
+    const cookieStore = cookies();
+    const supabase = await createClient(cookieStore);
 
-    const getUserProfileData = await fetch(`http://${origin}/api/user/${username}`);
+    const userProfile = await getUserDataByUsername(supabase, username);
 
-    if(!getUserProfileData.ok) notFound();
+    if (!userProfile) {
+        return null;
+    }
 
-    const userProfile = await getUserProfileData.json();
+    if (!userProfile.id) notFound();
+
+    const userSession = await getUserSessionID(supabase);
+
+    if (!userSession) {
+        return null;
+    }
+
+    const currentUser: UserData | null = await getUserDataByID(supabase, userSession.id);
+
+    if (!currentUser) {
+        return null;
+    }
+
+    const userPosts: Tweet[] = await getUserPosts(username, currentUser.id);
 
     const userJoinedDate = new Date(userProfile.createdAt);
     const userJoinedYear = userJoinedDate.getFullYear();
     let userJoinedMonth: number | string = userJoinedDate.getMonth();
 
-    const getUserPosts = await fetch(`http://${origin}/api/tweet/${username}`, { headers: headers() });
-    const userPosts = await getUserPosts.json();
-
-    const getCurrentUser = await fetch(`http://${origin}/api/user`, { headers: headers() });
-    const currentUser = await getCurrentUser.json() as UserData;
-    
     switch (userJoinedMonth) {
         case 0:
             userJoinedMonth = "January";

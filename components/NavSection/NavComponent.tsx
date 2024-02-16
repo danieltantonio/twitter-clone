@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
+
+import { createClient } from "@/lib/supabase/server";
+import { getUserDataByID, getUserSessionID } from "@/lib/getUserData";
 
 import { BsTwitter, BsBell, BsBookmark, BsPeople, BsPerson } from "react-icons/bs";
 import { BiHomeCircle, BiSearchAlt2, BiEnvelope } from "react-icons/bi";
@@ -9,6 +12,8 @@ import { type IconType } from "react-icons/lib/esm/iconBase";
 
 import TweetButtonComponent from "./TweetButtonComponent";
 import ToolTipComponent from "./ToolTipComponent";
+
+import type { UserData } from "@/lib/types/userdata.types";
 
 type NavLink = {
   title: string,
@@ -51,10 +56,22 @@ const navLinks: NavLink[] = [
 ];
 
 export default async function NavComponent() {
-  const headersList = headers();
-  const origin = headersList.get("host");
-  const getCurrentUser = await fetch(`http://${origin}/api/user`, { headers: headers() });
-  const currentUser = await getCurrentUser.json();
+  const cookieStore = cookies();
+  const supabase = await createClient(cookieStore);
+  
+  const session = await getUserSessionID(supabase);
+
+  if(!session) {
+    console.error("NavComponent Error. Check logs.");
+    return null;
+  }
+
+  const currentUser = await getUserDataByID(supabase, session.id);
+
+  if(!currentUser) {
+    console.error("NavComponent Error");
+    return null;
+  }
 
   return (
     <header className="sticky top-0 h-screen">

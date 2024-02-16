@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+require("dotenv").config();
+
 const nextConfig = {
     experimental: {
         serverActions: true
@@ -12,7 +14,7 @@ const nextConfig = {
                 pathname: "/storage/v1/object/public/**"
             }
         ]
-    }
+    },
 }
 
 module.exports = nextConfig
