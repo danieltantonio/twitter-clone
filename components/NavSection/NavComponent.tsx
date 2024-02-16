@@ -13,8 +13,6 @@ import { type IconType } from "react-icons/lib/esm/iconBase";
 import TweetButtonComponent from "./TweetButtonComponent";
 import ToolTipComponent from "./ToolTipComponent";
 
-import type { UserData } from "@/lib/types/userdata.types";
-
 type NavLink = {
   title: string,
   icon: IconType
@@ -81,7 +79,7 @@ export default async function NavComponent() {
           {
             navLinks.map((nl: NavLink, i: number) => {
               return (
-                <Link key={i} href={`/${nl.title.toLowerCase()}`} className="group flex">
+                <Link key={i} href={`/${nl.title.toLowerCase()}`} className="group flex" prefetch={true}>
                   <div className="flex text-xl m-2 transition duration-100 group-hover:bg-slate/20 rounded-full">
                     <div className="m-2"><nl.icon size={25} /></div>
                     <div className="m-2">{nl.title}</div>
