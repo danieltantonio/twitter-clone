@@ -13,5 +13,5 @@ export type Tweet = {
   replyCount: string,
   isReply: boolean,
   createdAt: string,
-  hasLikedTweet: boolean
+  hasLikedTweet?: boolean
 }
