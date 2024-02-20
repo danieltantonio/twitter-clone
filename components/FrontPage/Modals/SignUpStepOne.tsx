@@ -1,5 +1,6 @@
 import { Input } from "@material-tailwind/react"
 import { FormEvent, useEffect } from "react";
+import * as EmailValidator from "email-validator";
 
 export default function SignUpStepOne(props: {
     email: string,
@@ -35,8 +36,15 @@ export default function SignUpStepOne(props: {
             const checkEmail = await fetch(`/api/user/register/${email}`);
 
             if (checkEmail.status === 404) {
-                handleUniqueEmail(true);
-                handleLoading(false);
+                const isValidEmail: boolean = EmailValidator.validate(email);
+
+                if (isValidEmail) {
+                    handleUniqueEmail(true);
+                    handleLoading(false);
+                } else {
+                    handleUniqueEmail(false);
+                    handleLoading(false);
+                }
             } else {
                 handleUniqueEmail(false);
                 handleLoading(false);
