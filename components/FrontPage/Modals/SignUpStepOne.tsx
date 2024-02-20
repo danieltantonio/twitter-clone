@@ -14,7 +14,7 @@ export default function SignUpStepOne(props: {
 
     async function userNameNotTaken(username: string) {
         try {
-            const checkUsername = await fetch(`http://localhost:3000/api/user/${username}`);
+            const checkUsername = await fetch(`/api/user/${username}`);
 
             if (checkUsername.status === 404) {
                 handleUniqueUsername(true);
@@ -32,7 +32,7 @@ export default function SignUpStepOne(props: {
 
     async function emailNotTaken(email: string) {
         try {
-            const checkEmail = await fetch(`http://localhost:3000/api/user/register/${email}`);
+            const checkEmail = await fetch(`/api/user/register/${email}`);
 
             if (checkEmail.status === 404) {
                 handleUniqueEmail(true);
