@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Spinner } from "@material-tailwind/react";
-import * as EmailValidator from "email-validator";
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -84,9 +83,9 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   useEffect(() => {
     const isValidName = signupForm.name.length >= 6 && signupForm.name.length <= 12 && isUniqueUsername;
-    const isValidEmail: boolean = EmailValidator.validate(signupForm.email) && isUniqueEmail;
     const isValidPassword = signupForm.password.length >= 6 && signupForm.password.length <= 12;
     const isValidConfirmPass = signupForm.confirmPass === signupForm.password;
+    const isValidEmail = isUniqueEmail;
 
     handleNextStep(isValidName, isValidEmail, isValidPassword, isValidConfirmPass);
 
