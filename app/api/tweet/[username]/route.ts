@@ -28,8 +28,8 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                 authorHeaderUrl: sql<string>`${schemas.profile.headerUrl}`,
             },
             textContent: schemas.tweet.postContent,
-            likeCount: sql<string>`COUNT(${schemas.like.id})`,
-            replyCount: sql<string>`COUNT(${schemas.reply.id})`,
+            likeCount: sql<string>`COUNT(DISTINCT(${schemas.like.id}))`,
+            replyCount: sql<string>`COUNT(DISTINCT(${schemas.reply.id}))`,
             createdAt: sql<string>`${schemas.tweet.createdAt}`,
             isReply: schemas.tweet.isReply
         })

@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
             authorHeaderUrl: sql<string>`${schemas.profile.headerUrl}`,
         },
         textContent: schemas.tweet.postContent,
-        likeCount: sql<string>`COUNT(${schemas.like.id})`,
-        replyCount: sql<string>`COUNT(${schemas.reply.id})`,
+        likeCount: sql<string>`COUNT(DISTINCT(${schemas.like.id}))`,
+        replyCount: sql<string>`COUNT(DISTINCT(${schemas.reply.id}))`,
         createdAt: sql<string>`${schemas.tweet.createdAt}`,
         hasLikedTweet: data.session ? sql<boolean>`EXISTS(
             ${db.select()

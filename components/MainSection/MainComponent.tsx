@@ -5,7 +5,6 @@ import WriteTweetInteractionComponent from "./WriteTweetInteractionComponent";
 import { PostTweet } from "@/lib/ServerActions/TweetActions";
 
 import type { UserData } from "@/lib/types/userdata.types";
-import type { Tweet } from "@/lib/types/tweet.types";
 
 function HomeOption(props: { label: string, className?: string }): JSX.Element {
   const { label, className } = props;
