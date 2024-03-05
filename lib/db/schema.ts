@@ -52,6 +52,12 @@ export const tweetHashtag = pgTable("tweet_hashtag", {
     hashtagID: uuid("hashtag_id").notNull().references(() => hashtag.id).primaryKey()
 });
 
+export const follow = pgTable("follow", {
+    followerID: uuid("follower_id").notNull().references(() => profile.id).primaryKey(),
+    followingID: uuid("following_id").notNull().references(() => profile.id).primaryKey(),
+    createdAt: timestamp("created_at").defaultNow().notNull()
+});
+
 export const profileRelations = relations(profile, ({ many }) => ({
     tweet: many(tweet),
     like: many(like),
