@@ -4,13 +4,12 @@ import { useState } from "react";
 
 import TweetsDisplayDashboard from "../MainSection/TweetsDisplayDashboard";
 
-import type { Tweet } from "@/lib/types/tweet.types";
 import type { UserData } from "@/lib/types/userdata.types";
 
 type TabSelect = "Posts" | "Replies" | "Media" | "Likes";
 const tabSelectInit: TabSelect = "Posts";
 
-export default function ProfileDashboardComponent(props: { currentUser: UserData, username?: string }) {
+function AuthorizedDashboardComponent(props: { currentUser: UserData, username?: string }) {
   const { currentUser, username } = props;
   const [tab, setTab] = useState(tabSelectInit);
 
@@ -59,5 +58,23 @@ export default function ProfileDashboardComponent(props: { currentUser: UserData
         )
       }
     </div>
+  )
+}
+
+export default function ProfileDashboardComponent(props: { currentUser: UserData, authorized: boolean, username?: string }) {
+  const { currentUser, authorized, username } = props;
+
+  return (
+    <>
+      {
+        authorized ?
+          <AuthorizedDashboardComponent currentUser={currentUser} username={username} />
+          :
+          <div className="flex flex-col px-32">
+            <span className="text-3xl font-bold">These posts are protected</span>
+            <span className="text-slate/75 text-sm">Only approved followers can see @{username}’s posts. To request access, click Follow. <span className="text-primary">Learn more</span></span>
+          </div>
+      }
+    </>
   )
 }

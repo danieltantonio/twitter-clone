@@ -16,7 +16,7 @@ export default function PostComponent(props: { tweet: Tweet, currentUser: UserDa
   let threadLine: boolean = true;
 
   function handleBackgroundClick() {
-    router.push(`/${tweet.authorInfo.authorUserName}/status/${tweet.id}`);
+    router.push(`/${tweet.user_name}/status/${tweet.id}`);
   }
 
   if(!isThread) threadLine = false;

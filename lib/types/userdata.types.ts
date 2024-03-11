@@ -5,5 +5,6 @@ export type UserData = {
     createdAt: Date,
     avatarUrl: string,
     headerUrl: string,
-    bio: string
+    bio: string,
+    isPrivate: boolean
 }

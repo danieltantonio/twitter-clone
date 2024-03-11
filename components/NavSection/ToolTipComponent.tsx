@@ -10,7 +10,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 import type { UserData } from "@/lib/types/userdata.types";
 
-export default function ToolTipComponent(props: { userData: UserData }) {
+function LoggedInToolTipComponent(props: { userData: UserData }) {
     const { userData } = props;
 
     const [logoutTooltip, setLogoutTooltip] = useState(false);
@@ -40,13 +40,13 @@ export default function ToolTipComponent(props: { userData: UserData }) {
                     <div className="flex flex-col" onClick={handleLogout}>
                         <div className="relative h-[40px] flex flex-col justify-center hover:bg-rlgrey/30 hover:cursor-pointer p-4 rounded-lg">
                             <span className="font-bold text-lg">Log out @{userData.userName}</span>
-                        {
-                            clickedLogout && (
-                                <div className="absolute h-full w-full top-0 left-0 flex flex-col justify-center bg-black rounded-lg">
-                                    <Spinner color="blue" className="mx-auto"/>
-                                </div>
-                            )
-                        }
+                            {
+                                clickedLogout && (
+                                    <div className="absolute h-full w-full top-0 left-0 flex flex-col justify-center bg-black rounded-lg">
+                                        <Spinner color="blue" className="mx-auto" />
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                 }
@@ -68,6 +68,21 @@ export default function ToolTipComponent(props: { userData: UserData }) {
             </Tooltip>
             {
                 logoutTooltip && <div id="tooltip-click" className="absolute h-full w-full left-0 top-0" onClick={handleCloseLogoutTooltip}></div>
+            }
+        </>
+    );
+}
+
+export default function ToolTipComponent(props: { userData: UserData | null }) {
+    const { userData } = props;
+
+    return (
+        <>
+            {
+                userData ?
+                    <LoggedInToolTipComponent userData={userData} />
+                    :
+                    null
             }
         </>
     )

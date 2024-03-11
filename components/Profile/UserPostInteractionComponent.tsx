@@ -17,7 +17,7 @@ import { UserData } from "@/lib/types/userdata.types";
 export default function UserPostInteractionComponent(props: { tweet: Tweet, replies: Tweet[], currentUser: UserData, postID: string }) {
     const { tweet, replies, currentUser, postID } = props;
     const [likedPost, setLikedPost] = useState(false);
-    const [likeCount, setLikeCount] = useState(parseInt(tweet.likeCount));
+    const [likeCount, setLikeCount] = useState(tweet.like_count);
     const supabase = createClient();
 
     async function handleLike() {
@@ -51,7 +51,7 @@ export default function UserPostInteractionComponent(props: { tweet: Tweet, repl
     }
 
     useEffect(() => {
-        if(tweet.hasLikedTweet) setLikedPost(true);
+        if(tweet.has_liked_tweet) setLikedPost(true);
     }, []);
 
     return (

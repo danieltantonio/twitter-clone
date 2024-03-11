@@ -10,12 +10,12 @@ export default function PostAuthorIconComponent(props: { tweet?: Tweet, userData
     if (!tweet && userData) {
         imgSrc = userData.avatarUrl;
     } else if (tweet && !userData) {
-        imgSrc = tweet.authorInfo.authorAvatarUrl;
+        imgSrc = tweet.avatar_url;
     } else if (!tweet && !userData) {
         console.error("PostAuthorIconComponent Error: Missing tweet prop or userData prop!");
         return null;
     } else if (tweet && userData) {
-        imgSrc = tweet.authorInfo.authorAvatarUrl;
+        imgSrc = tweet.avatar_url;
     }
 
     return (
