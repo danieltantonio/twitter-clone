@@ -13,6 +13,8 @@ import { type IconType } from "react-icons/lib/esm/iconBase";
 import TweetButtonComponent from "./TweetButtonComponent";
 import ToolTipComponent from "./ToolTipComponent";
 
+import type { UserData } from "@/lib/types/userdata.types";
+
 type NavLink = {
   title: string,
   icon: IconType
@@ -59,16 +61,29 @@ export default async function NavComponent() {
   
   const session = await getUserSessionID(supabase);
 
-  if(!session) {
-    console.error("NavComponent Error. Check logs.");
-    return null;
+  if(session.error) {
+    const statusError = session.error.status;
+
+    if(statusError === 500) {
+      console.error(`Nav Component Status Error: 500: ${session.error.message}`);
+      return null;
+    }
   }
 
-  const currentUser = await getUserDataByID(supabase, session.id);
+  let userDataOrNotLoggedIn: UserData | null = null;
 
-  if(!currentUser) {
-    console.error("NavComponent Error");
-    return null;
+  if(session.id) {
+    const getCurrentUser = await getUserDataByID(supabase, session.id);
+    if(getCurrentUser.error) {
+      const statusError = getCurrentUser.error.status;
+
+      if(statusError === 500) {
+        console.error(`Nav Component Status Error 500: ${getCurrentUser.error.message}`);
+        return null;
+      }
+    } else {
+      userDataOrNotLoggedIn = getCurrentUser.userData as UserData;
+    }
   }
 
   return (
@@ -90,7 +105,7 @@ export default async function NavComponent() {
           }
           <TweetButtonComponent />
         </div>
-        <ToolTipComponent userData={currentUser} />
+        <ToolTipComponent userData={userDataOrNotLoggedIn} />
       </div>
     </header>
   )

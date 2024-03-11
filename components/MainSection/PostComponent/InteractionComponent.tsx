@@ -17,8 +17,8 @@ import type { UserData } from "@/lib/types/userdata.types";
 
 export default function InteractionComponent(props: { tweet: Tweet, currentUser: UserData }) {
     const { tweet, currentUser } = props;
-    const [likes, setLikes] = useState(parseInt(tweet.likeCount));
-    const [replies, setReplies] = useState(parseInt(tweet.replyCount));
+    const [likes, setLikes] = useState(tweet.like_count);
+    const [replies, setReplies] = useState(tweet.reply_count);
     const [likedPost, setLikedPost] = useState(false);
 
     const supabase = createClient();
@@ -42,19 +42,25 @@ export default function InteractionComponent(props: { tweet: Tweet, currentUser:
             }
 
         } else {
-            await supabase
+            const { data, error } = await supabase
                 .from("like")
                 .delete()
                 .eq("user_id", currentUser.id)
                 .eq("tweet_id", tweet.id);
 
-            setLikedPost(false);
-            setLikes(likes - 1);
+            if (error) {
+                console.error("handleLike() Error: ", error);
+            }
+
+            if (data) {
+                setLikedPost(false);
+                setLikes(likes - 1);
+            }
         }
     }
 
     useMemo(() => {
-        if (tweet.hasLikedTweet) setLikedPost(true);
+        if (tweet.has_liked_tweet) setLikedPost(true);
     }, []);
 
     return (
@@ -93,7 +99,7 @@ export default function InteractionComponent(props: { tweet: Tweet, currentUser:
             <div onClick={fgClick}>
                 <div className="flex flex-row items-center cursor-pointer group">
                     <div className="h-full p-2 rounded-full group-hover:bg-primary/20">
-                        <IoIosStats className="group-hover:text-primary"/>
+                        <IoIosStats className="group-hover:text-primary" />
                     </div>
                     <span className="text-sm font-light px-2 group-hover:text-primary">{statToString(10842)}</span>
                 </div>

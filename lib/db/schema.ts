@@ -10,6 +10,7 @@ export const profile = pgTable("profile", {
     avatarUrl: text("avatar_url").default("https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/avatar/default.jpg").notNull(),
     headerUrl: text("header_url").default("https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/header/default.jpg").notNull(),
     bio: text("bio").default("").notNull(),
+    privateProfile: boolean("private_profile").notNull().default(false),
 });
 
 export const tweet = pgTable("tweet", {

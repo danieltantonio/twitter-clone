@@ -13,11 +13,11 @@ export default function PostContentComponent(props: { tweet: Tweet }) {
         <div className="ml-2">
             <div className="flex flex-row justify-between w-full">
                 <div className="flex flex-row text-sm justify-between">
-                    <span className="font-bold">{tweet.authorInfo.authorDisplayName}</span>
+                    <span className="font-bold">{tweet.display_name}</span>
                     <div className="flex flex-row ml-2 font-light">
-                        <span className="text-slate/75">@{tweet.authorInfo.authorUserName}</span>
+                        <span className="text-slate/75">@{tweet.user_name}</span>
                         <BsDot className="h-full text-slate/75" />
-                        <span className="text-slate/75">{dayjs(tweet.createdAt).fromNow()}</span>
+                        <span className="text-slate/75">{dayjs(tweet.created_at).fromNow()}</span>
                     </div>
                 </div>
                 <div>
@@ -25,7 +25,7 @@ export default function PostContentComponent(props: { tweet: Tweet }) {
                 </div>
             </div>
             <div id="post" className="text-sm font-light mb-2">
-                <span>{tweet.textContent}</span>
+                <span>{tweet.post_content}</span>
             </div>
         </div>
     )

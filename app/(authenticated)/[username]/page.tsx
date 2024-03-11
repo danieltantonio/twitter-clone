@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { MdDateRange } from "react-icons/md";
+import { IoMdLock } from "react-icons/io";
 
 import { createClient } from "@/lib/supabase/server";
 import { getUserDataByID, getUserSessionID, getUserDataByUsername } from "@/lib/getUserData";
@@ -17,25 +18,37 @@ export default async function User({ params }: { params: { username: string } })
     const cookieStore = cookies();
     const supabase = await createClient(cookieStore);
 
-    const userProfile = await getUserDataByUsername(supabase, username);
-
-    if (!userProfile) {
-        return null;
-    }
-
-    if (!userProfile.id) notFound();
-
     const userSession = await getUserSessionID(supabase);
 
-    if (!userSession) {
+    if (userSession.error) {
+        console.error(`Session Status Error ${userSession.error.status}: ${userSession.error.message}`);
         return null;
     }
 
-    const currentUser: UserData | null = await getUserDataByID(supabase, userSession.id);
+    const getCurrentUser = await getUserDataByID(supabase, userSession.id);
 
-    if (!currentUser) {
+    if (getCurrentUser.error) {
+        console.error(`Get User Data Status Error ${getCurrentUser.error.status}: ${getCurrentUser.error.message}`)
         return null;
     }
+
+    const currentUser = getCurrentUser.userData as UserData;
+
+    const getUserProfile = await getUserDataByUsername(supabase, username, currentUser);
+    let isAuthorized: boolean = true;
+
+    if (getUserProfile.error) {
+        if (getUserProfile.error.status === 500) {
+            console.error(`Get User Profile Status Error ${getUserProfile.error.status}: ${getUserProfile.error.message}`);
+            return null;
+        } else if (getUserProfile.error.status === 404) {
+            notFound();
+        } else if (getUserProfile.error.status === 401) {
+            isAuthorized = false;
+        }
+    }
+
+    const userProfile = getUserProfile.userData as UserData;
 
     const userJoinedDate = new Date(userProfile.createdAt);
     const userJoinedYear = userJoinedDate.getFullYear();
@@ -43,7 +56,7 @@ export default async function User({ params }: { params: { username: string } })
 
     const { data: userPosts, error: tweetsErr } = await supabase.from("tweet").select("id").eq("profile_id", userProfile.id);
 
-    if(tweetsErr) {
+    if (tweetsErr) {
         console.error("[DB Server Error]: ", tweetsErr);
         return null;
     }
@@ -103,8 +116,15 @@ export default async function User({ params }: { params: { username: string } })
 
             <IconHeaderComponent currentUser={currentUser} userProfile={userProfile} />
 
-            <div className="flex flex-col ml-5 mb-5">
-                <span className="text-xl font-bold">{userProfile.displayName}</span>
+            <div className="flex flex-col ml-5 mb-5 mt-2">
+                <div className="flex flex-row">
+                    <span className="text-xl font-bold">{userProfile.displayName}</span>
+                    {
+                        userProfile.isPrivate && (
+                            <IoMdLock className="text-white" />
+                        )
+                    }
+                </div>
                 <span className="text-sm text-slate/75">@{userProfile.userName}</span>
                 <div>
                     <span>{userProfile.bio}</span>
@@ -125,7 +145,7 @@ export default async function User({ params }: { params: { username: string } })
                 </div>
             </div>
 
-            <ProfileDashboardComponent currentUser={currentUser} username={username} />
+            <ProfileDashboardComponent currentUser={currentUser} username={username} authorized={isAuthorized} />
         </div>
     )
 }

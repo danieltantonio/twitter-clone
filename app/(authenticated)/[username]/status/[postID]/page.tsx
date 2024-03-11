@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 
 import PostAuthorIconComponent from "@/components/MainSection/PostComponent/PostAuthorIconComponent";
 import PostComponent from "@/components/MainSection/PostComponent";
@@ -12,10 +12,11 @@ import { createClient } from "@/lib/supabase/server";
 
 import { BsThreeDots, BsDot } from "react-icons/bs";
 
-import { getTweetData, getTweetReplyIDs } from "@/lib/getTweetData";
-import { getUserDataByID, getUserDataByUsername } from "@/lib/getUserData";
+import { getTweetData, getTweetReplies } from "@/lib/getTweetData";
+import { getUserDataByID, getUserDataByUsername, getUserSessionID } from "@/lib/getUserData";
 import { PostReply } from "@/lib/ServerActions/TweetActions";
 
+import type { UserData } from "@/lib/types/userdata.types";
 import type { Tweet } from "@/lib/types/tweet.types";
 
 export default async function UserPost({ params }: { params: { username: string, postID: string } }) {
@@ -26,64 +27,81 @@ export default async function UserPost({ params }: { params: { username: string,
     const replies: Tweet[] = [];
     const thread: Tweet[] = [];
 
-    const { data, error } = await supabase.auth.getSession();
+    const getUserSession = await getUserSessionID(supabase);
 
-    if (error) {
-        console.error("/[username]/status/[postID] Session Error: ", error);
+    if (getUserSession.error) {
+        if (getUserSession.error.status === 500) {
+            console.error(`UserPost User Session Status Error ${getUserSession.error.status}: ${getUserSession.error.message}`);
+            return null;
+        } else {
+            redirect("/");
+        }
+    }
+
+    const getCurrentUser = await getUserDataByID(supabase, getUserSession.id);
+
+    if (getCurrentUser.error) {
+        if (getCurrentUser.error.status === 500) {
+            console.error(`UserPost Status Error 500: ${getCurrentUser.error.message}`);
+            return null;
+        }
+    }
+
+    const currentUser = getCurrentUser.userData as UserData;
+
+    const getOriginalPosterData = await getUserDataByUsername(supabase, username, currentUser);
+
+    if (getOriginalPosterData.error) {
+        const errorStatus = getOriginalPosterData.error.status;
+        if (errorStatus === 500) {
+            console.error(`UserPost Status Error 500: ${getOriginalPosterData.error.message}`);
+            return null;
+        } else if (errorStatus === 404) {
+            notFound();
+        }
+    }
+
+    const originalPosterData = getOriginalPosterData.userData as UserData;
+
+    const tweetData = await getTweetData(supabase, postID);
+
+    if (tweetData.error) {
+        console.error(`UserPost Component ${tweetData.error.status} Error: ${tweetData.error.message}`);
         return null;
     }
 
-    if (!data.session) redirect("/");
 
-    const tweetReplies = await getTweetReplyIDs(postID);
-    const originalPosterData = await getUserDataByUsername(supabase, username);
-    const currentUser = await getUserDataByID(supabase, data.session.user.id);
+    const tweet = tweetData.data as Tweet;
+    const dateCreated = new Date(tweet.created_at);
 
-    if (!currentUser) {
-        console.error("/[username]/status/[postID] getUserDataByID() Error: Server error retrieving user data.");
+    const tweetReplies = await getTweetReplies(supabase, postID);
+
+    if(tweetReplies.error) {
+        console.error(`UserPost Componenet ${tweetReplies.error.status} Error: ${tweetReplies.error.message}`);
         return null;
     }
 
-    if (!currentUser.id) redirect("/");
-
-    const tweetData: Tweet[] = await getTweetData(postID, currentUser.id);
-    const tweet: Tweet = tweetData[0];
-    const dateCreated = new Date(tweet.createdAt);
-
-    if (!originalPosterData) {
-        console.error("/[username]/status/[postID] getUserDataByUsername() Error: Server error getting Original Poster data.");
-        return null;
-    }
-
-    if (!originalPosterData.id) {
-        console.error("/[username]/status/[postID] getUserDataByUsername() Error: Cannot find user");
-        return null;
-    }
-
-    for (let tweetID of tweetReplies) {
-        if (tweetID.id) {
-            const reply = await getTweetData(tweetID.id, currentUser.id);
-
-            for (let i = 0; i < reply.length; i++) {
-                replies.push(reply[i]);
-            }
+    if(tweetReplies.data) {
+        for (let reply of tweetReplies.data) {
+            const replyTweet = reply as Tweet;
+            replies.push(replyTweet);
         }
     }
 
     const getHourCreated = dateCreated.getUTCHours() - 12;
     let hourCreated: number = getHourCreated;
-    let morningOrNight: string = "PM";
+    let morningOrNight: "AM" | "PM" = "PM";
 
     if (getHourCreated < 0) hourCreated = getHourCreated + 12;
     if (getHourCreated < 12) morningOrNight = "AM";
 
-    if (tweet.isReply) {
+    if (tweet.is_reply) {
         let post: Tweet = tweet;
 
-        while (post.isReply) {
+        while (post.is_reply) {
             const { data, error } = await supabase
                 .from("reply")
-                .select("reply_to")
+                .select("*")
                 .eq("id", post.id);
 
             if (error) {
@@ -92,15 +110,19 @@ export default async function UserPost({ params }: { params: { username: string,
             }
 
             const replyToID: string = data[0].reply_to;
+            const profileToReplyTo: string = data[0].profile_id;
 
-            const replyTo: Tweet[] = await getTweetData(replyToID, currentUser.id);
+            const replyTo = await getTweetData(supabase, replyToID);
 
-            post = replyTo[0];
+            if (replyTo.error) {
+                console.error(`UserPost Component ${replyTo.error.status} Error: ${replyTo.error.message}`);
+                return null;
+            }
+
+            post = replyTo.data as Tweet;
             thread.unshift(post);
         }
     }
-    
-    const prevTweet: Tweet = thread[thread.length - 1];
 
     async function handlePostReplyServerAction(formData: FormData) {
         "use server";
@@ -127,8 +149,8 @@ export default async function UserPost({ params }: { params: { username: string,
                     <div className="flex flex-row ml-2">
                         <PostAuthorIconComponent tweet={tweet} />
                         <div className="flex flex-col">
-                            <span className="font-bold h-[20px]">{tweet.authorInfo.authorDisplayName}</span>
-                            <span className="text-slate/75 text-sm">@{tweet.authorInfo.authorUserName}</span>
+                            <span className="font-bold h-[20px]">{tweet.display_name}</span>
+                            <span className="text-slate/75 text-sm">@{tweet.user_name}</span>
                         </div>
                     </div>
                     <div className="px-4 text-slate/75"><BsThreeDots /></div>
@@ -136,7 +158,7 @@ export default async function UserPost({ params }: { params: { username: string,
                 <div className="mx-4">
                     <div className="mt-4">
                         <span className="text-lg">
-                            {tweet.textContent}
+                            {tweet.post_content}
                         </span>
                     </div>
                     <div className="text-slate/75 text-md flex flex-row mb-2">
@@ -179,8 +201,8 @@ export default async function UserPost({ params }: { params: { username: string,
                                 <PostComponent key={tweet.id} tweet={tweet} currentUser={currentUser} />
                             )
                         })
-                        )
-                    :
+                    )
+                        :
                         null
                 }
             </div>
