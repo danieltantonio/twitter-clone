@@ -21,7 +21,7 @@ different is that it is production ready, fast, and easily deployable. A full sc
 - [ ] Implement tweet fetch cache system
 - [x] Reply feature
 - [x] User profiles
-- [ ] Private profiles
+- [x] Private profiles
 - [ ] Picture/Video uploading
 - [ ] Hashtags/Trending
 - [ ] Direct Messaging
