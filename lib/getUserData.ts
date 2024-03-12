@@ -96,6 +96,7 @@ export async function getUserDataByID(supabase: SupabaseClient<any, "public", an
         headerUrl: user["header_url"],
         bio: user.bio,
         isPrivate: user["private_profile"],
+        init: user["init"]
     }
 
     return { error: null, userData: userProfile };

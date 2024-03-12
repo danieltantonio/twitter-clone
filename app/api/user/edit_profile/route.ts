@@ -9,17 +9,12 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient(cookieStore);
     const data = await req.formData();
 
-    const dataObj = Object.fromEntries(data);
     const avatarName: string = uuidv4();
     const headerName: string = uuidv4();
 
-    const profileData = {
-        name: dataObj.name,
-        bio: dataObj.bio,
-        avatar: dataObj.avatar,
-        header: dataObj.header
-    };
-    
+    const dataObjStr = Object(data.get("profileData"));
+    const dataObj = JSON.parse(dataObjStr);
+
     const defaultAvatar = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/avatar/default.jpg";
     const defaultHeader = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/header/default.jpg";
 
@@ -39,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     const currentUser = session.session.user.id;
 
-    if(profileData.avatar !== defaultAvatar) {
+    if(dataObj.avatar !== defaultAvatar) {
         const { error: uploadAvatarErr } = await supabase
             .storage
             .from("avatar")
@@ -56,7 +51,7 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    if(profileData.header !== defaultHeader) {
+    if(dataObj.header !== defaultHeader) {
         const { error: uploadHeaderErr } = await supabase
             .storage
             .from("header")
@@ -76,16 +71,17 @@ export async function POST(req: NextRequest) {
     const { data: uploadedAvatarUrl } = await supabase.storage.from("avatar").getPublicUrl(`${currentUser}/${avatarName}.jpg`);
     const { data: uploadedHeaderUrl } = await supabase.storage.from("header").getPublicUrl(`${currentUser}/${headerName}.jpg`);
 
-    const avatarUrl = profileData.avatar !== defaultAvatar ? uploadedAvatarUrl.publicUrl : defaultAvatar;
-    const headerUrl = profileData.header !== defaultHeader ? uploadedHeaderUrl.publicUrl : defaultHeader;
+    const avatarUrl = dataObj.avatar !== defaultAvatar ? uploadedAvatarUrl.publicUrl : defaultAvatar;
+    const headerUrl = dataObj.header !== defaultHeader ? uploadedHeaderUrl.publicUrl : defaultHeader;
 
     const { data: updateProfile, error: updateProfileErr } = await supabase
     .from("profile")
     .update({
-        display_name: profileData.name,
-        bio: profileData.bio,
+        display_name: dataObj.name,
+        bio: dataObj.bio,
         avatar_url: avatarUrl,
-        header_url: headerUrl
+        header_url: headerUrl,
+        private_profile: dataObj.private
     })
     .eq("id", currentUser);
 
@@ -94,6 +90,22 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ Error: "Update Profile Error. Check console." }, {
             status: 500
         });
+    }
+
+    if(dataObj.init) {
+        const { data, error: initErr } = await supabase
+            .from("profile")
+            .update({
+                init: true
+            })
+            .eq("id", currentUser);
+
+        if(initErr) {
+            console.error(`/api/edit_profile 500 Error: ${initErr}`);
+            return NextResponse.json({ Error: "Init Profile Error. Check console." }, {
+                status: 500
+            });
+        }
     }
 
     return NextResponse.json({ Success: "Successfully updated profile." });

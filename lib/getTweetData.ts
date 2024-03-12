@@ -27,7 +27,6 @@ export async function getTweetReplies(supabase: SupabaseClient<any, "public", an
         console.error("getTweetReplies() 500 Error: ", error);
         return { error: { status: 500, message: "Error retrieving replies of tweet. Check logs for details." }, data: null };
     } else {
-        console.log(tweetReplies);
         return { error: null, data: tweetReplies };
     }
 }

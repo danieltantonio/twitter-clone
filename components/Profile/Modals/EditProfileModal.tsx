@@ -11,15 +11,15 @@ import type { ChangeEvent } from "react";
 
 export default function EditProfileModal(
     props: {
-        openEditProfile: boolean
         currentUser: UserData,
-        closeModal: () => void,
+        initProfile?: boolean, // This is for when the user is still initializing their profile after sign up.
+        closeModal?: () => void,
     }
 ) {
+    const { currentUser, initProfile, closeModal } = props;
 
-    const { currentUser, closeModal } = props;
     const initEditMedia: EditMedia = { editMediaAvatar: false, editMediaHeader: false };
-    const initProfileData: ProfileData = { avatar: currentUser.avatarUrl, header: currentUser.headerUrl, name: currentUser.displayName, bio: currentUser.bio };
+    const initProfileData: ProfileData = { avatar: currentUser.avatarUrl, header: currentUser.headerUrl, name: currentUser.displayName, bio: currentUser.bio, private: currentUser.isPrivate };
     const [editMedia, setEditMedia] = useState(initEditMedia);
     const [profileData, setProfileData] = useState(initProfileData);
 
@@ -56,6 +56,7 @@ export default function EditProfileModal(
                         handleHeader={handleHeader}
                         handleEditMediaHeader={handleEditMediaHeader}
                         onChangeProfileData={onChangeProfileData}
+                        initProfile={initProfile}
                     />
                 )
             }

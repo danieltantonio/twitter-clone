@@ -11,6 +11,7 @@ import { getUserDataByID, getUserSessionID, getUserDataByUsername } from "@/lib/
 import ProfileDashboardComponent from "@/components/Profile/ProfileDashboardComponent";
 import IconHeaderComponent from "@/components/Profile/IconHeaderComponent";
 
+import ProfileHeaderComponent from "@/components/Profile/ProfileHeaderComponent";
 import type { UserData } from "@/lib/types/userdata.types";
 
 export default async function User({ params }: { params: { username: string } }) {
@@ -103,17 +104,8 @@ export default async function User({ params }: { params: { username: string } })
     }
 
     return (
-        <div className="flex flex-col">
-            <div className="flex flex-row">
-                <div className="hover:bg-slate/20 p-2 mt-2 mr-4 ml-2 rounded-full">
-                    <IoArrowBackOutline className="text-2xl" />
-                </div>
-                <div className="flex flex-col">
-                    <span className="font-bold text-xl">{userProfile.displayName}</span>
-                    <span className="text-slate/75 text-xs">{userPosts.length} Posts</span>
-                </div>
-            </div>
-
+        <div className="flex flex-col">            
+            <ProfileHeaderComponent userProfile={userProfile} userPosts={userPosts} />
             <IconHeaderComponent currentUser={currentUser} userProfile={userProfile} />
 
             <div className="flex flex-col ml-5 mb-5 mt-2">

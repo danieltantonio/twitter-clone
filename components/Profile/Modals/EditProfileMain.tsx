@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { CgClose } from "react-icons/cg";
 import { TbCameraPlus } from "react-icons/tb";
 import { IoClose } from "react-icons/io5";
 
-import { Input, Textarea } from "@material-tailwind/react";
+import { Input, Textarea, Switch, Typography } from "@material-tailwind/react";
 
 import fgClick from "@/lib/onClickForeground";
 
@@ -16,7 +17,8 @@ import type { ProfileData } from "@/lib/types/profile.types";
 
 export default function EditProfileMain(props: {
     profileData: ProfileData,
-    closeModal: () => void,
+    initProfile?: boolean,
+    closeModal?: () => void,
     handleAvatar: (handleAvatar: string) => void,
     handleHeader: (headerUrl: string) => void,
     handleEditMediaAvatar: (handleMediaAvatar: boolean) => void,
@@ -26,6 +28,7 @@ export default function EditProfileMain(props: {
 
     const {
         profileData,
+        initProfile,
         closeModal,
         handleAvatar,
         handleEditMediaAvatar,
@@ -33,6 +36,9 @@ export default function EditProfileMain(props: {
         handleEditMediaHeader,
         onChangeProfileData,
     } = props;
+
+    const router = useRouter();
+    const [privateProfile, setPrivateProfile] = useState(profileData.private);
 
     const hiddenAvatarFileInput = useRef<HTMLInputElement>(null);
     const hiddenHeaderFileInput = useRef<HTMLInputElement>(null);
@@ -83,7 +89,7 @@ export default function EditProfileMain(props: {
 
     }
 
-    async function saveChanges() {
+    async function saveChanges(init?: boolean) {
         const formData = new FormData();
         const getNewAvatar = await fetch(profileData.avatar);
         const getNewHeader = await fetch(profileData.header);
@@ -93,29 +99,54 @@ export default function EditProfileMain(props: {
         const newAvatar = profileData.avatar !== defaultAvatar ? newAvatarBlob : defaultAvatar;
         const newHeader = profileData.header !== defaultHeader ? newHeaderBlob : defaultHeader;
 
-        formData.append("avatar", newAvatar);
-        formData.append("header", newHeader);
-        formData.append("name", profileData.name);
-        formData.append("bio", profileData.bio);
+        let dataBody = {};
+
+        if (init) {
+            dataBody = {
+                avatar: newAvatar,
+                header: newHeader,
+                name: profileData.name,
+                bio: profileData.bio,
+                private: privateProfile,
+                init: true
+            }
+        } else {
+            dataBody = {
+                avatar: newAvatar,
+                header: newHeader,
+                name: profileData.name,
+                bio: profileData.bio,
+                private: privateProfile
+            }
+        }
+
+        formData.append("profileData", JSON.stringify(dataBody));
 
         await fetch(`/api/user/edit_profile`, {
             method: "POST",
             credentials: "same-origin",
             body: formData
         });
+
+        if (init) router.push("/home");
     }
 
     return (
-        <div className="fixed top-0 left-0 h-full w-screen bg-slate/50 z-10" onClick={closeModal}>
+        <div className="fixed top-0 left-0 h-full w-screen bg-rdgrey/50 z-10" onClick={closeModal}>
             <div className="flex flex-row justify-center mt-10">
                 <div className="bg-black w-[600px] rounded-2xl" onClick={fgClick}>
                     <div className="flex flex-col mx-1">
                         <div className="flex flex-row mt-4 justify-between w-full">
                             <div className="flex flex-row">
-                                <CgClose size={20} className="h-full font-bold cursor-pointer" onClick={closeModal} />
+                                {
+                                    !initProfile ?
+                                        <CgClose size={20} className="h-full font-bold cursor-pointer" onClick={closeModal} />
+                                        :
+                                        null
+                                }
                                 <span className="font-bold text-xl ml-10">Edit profile</span>
                             </div>
-                            <span className="text-black bg-white font-semibold text-sm rounded-full px-4 py-2" onClick={saveChanges}>Save</span>
+                            <span className="text-black bg-white font-semibold text-sm rounded-full px-4 py-2" onClick={() => saveChanges(initProfile)}>Save</span>
                         </div>
                         <div className="w-full relative my-2 pb-10">
                             <div className="w-full h-[200px] relative">
@@ -168,6 +199,14 @@ export default function EditProfileMain(props: {
                             </div>
                         </div>
                         <div className="py-8 px-2">
+                            <div className="mb-4">
+                                <Switch color="blue" label={
+                                    <div>
+                                        <Typography className="font-semibold text-white">Private Profile</Typography>
+                                        <Typography variant="small" className="text-slate">Only users who are following you can see your posts, replies, and your profile.</Typography>
+                                    </div>
+                                } checked={privateProfile} onClick={() => setPrivateProfile(!privateProfile)} />
+                            </div>
                             <div className="mb-8">
                                 <Input type="text" name="name" color="blue" size="lg" label="Name" className="text-white text-xl h-[50px]" value={profileData.name} onChange={onChangeProfileData} />
                             </div>

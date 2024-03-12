@@ -27,7 +27,7 @@ export default function FrontPage() {
                                 <Link href="#">Developers</Link>
                                 <Link href="#">Directory</Link>
                                 <Link href="#">Settings</Link>
-                                <span>&copy; 2023 Daniel waz here</span>
+                                <span>&copy; 2024 Daniel waz here</span>
                             </footer>
                         </div>
                     </div>

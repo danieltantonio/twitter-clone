@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Tooltip } from "@material-tailwind/react";
@@ -56,7 +57,7 @@ function LoggedInToolTipComponent(props: { userData: UserData }) {
                 <div id="head-bot" className="mb-[10px] hover:bg-slate/20 hover:cursor-pointer align-middle p-2 rounded-full mx-2 transition duration-400" onClick={handleOpenLogoutTooltip}>
                     <div className="flex flex-row justify-between align-middle">
                         <div className="flex flex-row align-middle h-10">
-                            <div className="w-[40px] h-[40px] bg-slate rounded-full"></div>
+                            <Image src={userData.avatarUrl} height={40} width={40} alt="Navbar tooltip user icon." className="rounded-full"/>
                             <div className="flex flex-col mx-2">
                                 <span className="font-bold text-lg leading-4">{userData.displayName}</span>
                                 <span className="text-slate/50 font-ultralight">@{userData.userName}</span>

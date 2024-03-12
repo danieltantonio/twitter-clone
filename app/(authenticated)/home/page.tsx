@@ -35,6 +35,10 @@ export default async function Home() {
 
     const currentUser = getCurrentUser.userData as UserData;
 
+    if(!currentUser.init) {
+        redirect("/init");
+    }
+
     return (
         <MainComponent currentUser={currentUser} />
     )
