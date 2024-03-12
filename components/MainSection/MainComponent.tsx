@@ -1,6 +1,7 @@
 import WriteTweetComponent from "./WriteTweetComponent"
 import TweetsDisplayDashboard from "./TweetsDisplayDashboard";
 import WriteTweetInteractionComponent from "./WriteTweetInteractionComponent";
+import PostAuthorIconComponent from "./PostComponent/PostAuthorIconComponent";
 
 import { PostTweet } from "@/lib/ServerActions/TweetActions";
 
@@ -40,9 +41,7 @@ export default async function MainComponent(props: { currentUser: UserData }) {
       </div>
 
       <div className="flex flex-row w-full border-b border-slate/25 p-2 mt-2">
-        <div className="mx-2">
-          <div className="h-[40px] w-[40px] bg-slate rounded-full"></div>
-        </div>
+        <PostAuthorIconComponent userData={currentUser} />
         <div className="flex flex-col w-full">
           <form action={handlePostTweetServerAction}>
             <WriteTweetComponent />

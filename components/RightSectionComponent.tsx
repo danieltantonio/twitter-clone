@@ -150,7 +150,7 @@ export default function RightSectionComponent() {
                     <BsThreeDots className="h-full"/>
                 </div>
             </Link>
-            <span className="mx-1">&copy; 2023 Daniel waz here</span>
+            <span className="mx-1">&copy; 2024 Daniel waz here</span>
         </div>
     </section>
   )
