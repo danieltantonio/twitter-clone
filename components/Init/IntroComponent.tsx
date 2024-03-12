@@ -21,7 +21,7 @@ export default function IntroComponent(props: { currentUser: UserData }) {
                         <div className="p-4 flex flex-col">
                             <span className="text-6xl font-extrabold my-10">Welcome to my Twitter Clone!</span>
                             <span className="text-lg mb-10">
-                                Let's get you started with customizing your profile.
+                                Let&apos;s get you started with customizing your profile.
                             </span>
                             <span className="bg-primary text-white font-bold text-2xl text-center rounded-full p-3 cursor-pointer" onClick={nextStepIntro}>Begin!</span>
                         </div>
