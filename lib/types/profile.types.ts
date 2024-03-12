@@ -12,5 +12,10 @@ export type ProfileData = {
     avatar: string,
     header: string,
     name: string,
-    bio: string
+    bio: string,
+    private: boolean
+}
+
+export type ProfileDataError = {
+    name: boolean
 }
