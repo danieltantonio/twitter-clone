@@ -30,5 +30,5 @@ different is that it is production ready, fast, and easily deployable. A full sc
 - [ ] Tweet Recommendation Algorithm
 - [ ] Drafts
 - [x] Edit profile feature
-- [ ] On signup edit profile
+- [x] On signup edit profile
 - [x] Login incorrect data
