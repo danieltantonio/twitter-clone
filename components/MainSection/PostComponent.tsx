@@ -22,11 +22,11 @@ export default function PostComponent(props: { tweet: Tweet, currentUser: UserDa
   if(!isThread) threadLine = false;
 
   return (
-    <div className="flex flex-col cursor-pointer hover:bg-slate/5 relative" onClick={handleBackgroundClick}>
+    <div className="flex flex-col cursor-pointer hover:bg-slate/5" onClick={handleBackgroundClick}>
       <div className={`flex flex-row border-slate/25 p-2 ${threadLine ? "" : "border-b-2" }`}>
         <PostAuthorIconComponent tweet={tweet} isThread={threadLine} />
         <div className="flex flex-col w-full">
-          <PostContentComponent tweet={tweet} />
+          <PostContentComponent tweet={tweet} currentUser={currentUser} />
           <div>
             <InteractionComponent tweet={tweet} currentUser={currentUser} />
           </div>

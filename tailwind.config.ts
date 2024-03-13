@@ -17,7 +17,8 @@ const config = withMt({
       },
       colors: {
         primary: "rgb(29, 155, 240)",
-        slate: "rgb(148 163 184)",
+        slate: "rgb(148, 163, 184)",
+        danger: "rgb(244, 33, 46)"
       },
       dropShadow: {
         "tooltip": "0 0 0.4rem rgb(32, 35, 39)"
@@ -32,7 +33,7 @@ const config = withMt({
       rwhite: "rgb(239, 243, 244)",
       green: "rgb(0, 186, 124)",
       like: "rgb(249, 24, 128)",
-      retweet: "rgb(0, 186, 124)"
+      retweet: "rgb(0, 186, 124)",
     }
   },
   plugins: [],
