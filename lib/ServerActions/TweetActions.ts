@@ -2,6 +2,9 @@
 
 import { createClient } from "../supabase/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+
+import type { Tweet } from "../types/tweet.types";
 
 export async function PostTweet(formData: FormData, profile_id: string) {
     const cookieStore = cookies();

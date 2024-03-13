@@ -1,16 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tooltip, Typography } from "@material-tailwind/react";
 
+import { RiUserFollowLine, RiUserUnfollowLine } from "react-icons/ri";
 import { BsDot, BsThreeDots, BsTrash3Fill } from "react-icons/bs";
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
-import fgClick from "@/lib/onClickForeground";
-
+import { useTweetsState } from "@/lib/store/tweetStore";
 import { createClient } from "@/lib/supabase/client";
+import fgClick from "@/lib/onClickForeground";
 
 import type { Tweet } from "@/lib/types/tweet.types";
 import type { UserData } from "@/lib/types/userdata.types";
@@ -19,17 +21,22 @@ dayjs.extend(relativeTime);
 
 function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (state: boolean) => void }) {
     const { tweet, handleHasClickedDelete } = props;
+    const { tweets, setTweets } = useTweetsState();
     const supabase = createClient();
 
-    async function deleteTweet() {
+    async function handleDeleteTweet() {
+        const removedTweet = tweets.filter((t) => tweet.id !== t.id);
+
         const { error } = await supabase
             .from("tweet")
             .delete()
             .eq("id", tweet.id);
-        
-        if(error) {
-            alert("There was a server error deleting this tweet. Please try again later.")
+
+        if (error) {
+            console.error(error);
+            alert("Server error deleting tweet. Please try again later");
         } else {
+            setTweets(removedTweet);
             handleHasClickedDelete(false);
         }
     }
@@ -42,7 +49,7 @@ function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (st
                         <span className="font-bold text-xl mb-2">Delete post?</span>
                         <span className="text-slate/75 text-sm font-light">This can&apos;t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results. </span>
                     </div>
-                    <div className="cursor-pointer w-full text-center bg-danger font-bold p-2 rounded-full mb-4" onClick={deleteTweet}><span>Delete</span></div>
+                    <div className="cursor-pointer w-full text-center bg-danger font-bold p-2 rounded-full mb-4" onClick={handleDeleteTweet}><span>Delete</span></div>
                     <div className="cursor-pointer w-full text-center font-bold p-2 rounded-full border border-slate/75" onClick={() => handleHasClickedDelete(false)}><span>Cancel</span></div>
                 </div>
             </div>
@@ -50,16 +57,46 @@ function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (st
     )
 }
 
-function ReportOrDeleteModal(props: { tweet: Tweet, currentUser: UserData, handleHasClickedDelete: (state: boolean) => void }) {
-    const { tweet, currentUser, handleHasClickedDelete } = props;
+function ReportOrDeleteModal(props: {
+    tweet: Tweet,
+    currentUser: UserData,
+    isFollowing: boolean
+    handleHasClickedDelete: (state: boolean) => void,
+    unfollowUser: () => void,
+    followUser: () => void
+}) {
+    const { tweet, currentUser, isFollowing, handleHasClickedDelete, unfollowUser, followUser } = props;
 
     if (tweet.user_name === currentUser.userName) {
         return (
-            <div className="flex flex-row text-danger text-md font-bold p-2 cursor-pointer hover:bg-slate/10 rounded-lg" onClick={() => handleHasClickedDelete(true)}>
-                <div>
-                    <BsTrash3Fill className="mx-2 h-full" size={14} />
+            <div className="flex flex-col text-danger text-md font-bold p-2 cursor-pointer hover:bg-slate/10 rounded-lg" onClick={() => handleHasClickedDelete(true)}>
+                <div className="flex flex-row py-2">
+                    <div>
+                        <BsTrash3Fill className="mx-2 h-full" size={14} />
+                    </div>
+                    <span className="mx-2">Delete</span>
                 </div>
-                <span className="mx-2">Delete</span>
+            </div>
+        )
+    } else {
+        return (
+            <div className="flex flex-col text-md font-bold p-2 cursor-pointer hover:bg-slate/10 rounded-lg">
+                {
+                    !isFollowing ?
+                        <div className="flex flex-row py-2" onClick={followUser}>
+                            <div>
+                                <RiUserFollowLine className="mx-2 h-full" size={18} />
+                            </div>
+                            <span className="mx-2">Follow @{tweet.user_name}</span>
+                        </div>
+                        :
+                        <div className="flex flex-row py-2" onClick={unfollowUser}>
+                            <div>
+                                <RiUserUnfollowLine className="mx-2 h-full" size={18} />
+                            </div>
+                            <span className="mx-2">Unfollow @{tweet.user_name}</span>
+                        </div>
+                }
             </div>
         )
     }
@@ -69,7 +106,9 @@ export default function PostContentComponent(props: { tweet: Tweet, currentUser:
     const { tweet, currentUser } = props;
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const [hasClickedDelete, setHasClickedDelete] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
 
+    const supabase = createClient();
     const router = useRouter();
 
     function closeComponentOnTooltip() {
@@ -80,6 +119,51 @@ export default function PostContentComponent(props: { tweet: Tweet, currentUser:
         closeComponentOnTooltip();
         setHasClickedDelete(state);
     }
+
+    async function checkIsFollowingAuthor() {
+        const { data: checkIsFollowing, error: authorError } = await supabase
+            .rpc("is_following_by_username", {
+                follower_user_name: currentUser.userName,
+                following_user_name: tweet.user_name
+            });
+
+        if (authorError) console.error(authorError);
+        else setIsFollowing(checkIsFollowing);
+    }
+
+    async function unfollowUser() {
+        const { error } = await supabase
+            .rpc("unfollow_user", {
+                following_user_name: tweet.user_name
+            });
+
+        if(error) {
+            console.error(error);
+            alert(`Error unfollowing @${tweet.user_name}. Please try again later!`);
+        } else {
+            setIsFollowing(false);
+            closeComponentOnTooltip();
+        }
+    }
+
+    async function followUser() {
+        const { error } = await supabase
+            .rpc("follow_user", {
+                user_name_to_follow: tweet.user_name
+            });
+        
+        if(error) {
+            console.error(error);
+            alert(`Error following @${tweet.user_name}. Please try again later!`);
+        } else {
+            setIsFollowing(true);
+            closeComponentOnTooltip();
+        }
+    }
+
+    useEffect(() => {
+        checkIsFollowingAuthor();
+    }, []);
 
     return (
         <div className="ml-2">
@@ -103,7 +187,14 @@ export default function PostContentComponent(props: { tweet: Tweet, currentUser:
                         placement="bottom-end"
                         content={
                             <div onClick={fgClick}>
-                                <ReportOrDeleteModal tweet={tweet} currentUser={currentUser} handleHasClickedDelete={handleHasClickedDelete} />
+                                <ReportOrDeleteModal
+                                    tweet={tweet}
+                                    currentUser={currentUser}
+                                    isFollowing={isFollowing}
+                                    handleHasClickedDelete={handleHasClickedDelete}
+                                    unfollowUser={unfollowUser}
+                                    followUser={followUser}
+                                />
                             </div>
                         }
                     >

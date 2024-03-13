@@ -1,19 +1,19 @@
 "use client";
 
+import PostComponent from "./PostComponent";
+import TweetReplyModal from "./TweetReplyModal";
+
 import { useState, useEffect } from "react";
 import { Spinner } from "@material-tailwind/react";
 
-import PostComponent from "./PostComponent";
-import TweetReplyModal from "./TweetReplyModal";
+import { useTweetsState } from "@/lib/store/tweetStore";
 
 import type { Tweet } from "@/lib/types/tweet.types"
 import type { UserData } from "@/lib/types/userdata.types"
 
 export default function TweetsDisplayDashboard(props: { currentUser: UserData, username?: string }) {
     const { currentUser, username } = props;
-
-    const initTweets: Tweet[] = [];
-    const [tweets, setTweets] = useState(initTweets);
+    const { tweets, setTweets } = useTweetsState();
 
     async function getTweets(username?: string) {
         if (!username) {
