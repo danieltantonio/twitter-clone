@@ -1,8 +1,8 @@
 "use client"
 
-import InteractionComponent from "./PostComponent/InteractionComponent";
-import PostContentComponent from "./PostComponent/PostContentComponent";
-import PostAuthorIconComponent from "./PostComponent/PostAuthorIconComponent";
+import InteractionComponent from "./InteractionComponent";
+import PostContentComponent from "./PostContentComponent";
+import PostAuthorIconComponent from "./PostAuthorIconComponent";
 
 import { useRouter } from "next/navigation";
 

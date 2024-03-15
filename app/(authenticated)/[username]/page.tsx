@@ -1,4 +1,3 @@
-import { IoArrowBackOutline } from "react-icons/io5";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 

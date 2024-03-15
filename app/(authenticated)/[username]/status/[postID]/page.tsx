@@ -3,10 +3,10 @@ import { cookies } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 
 import PostAuthorIconComponent from "@/components/MainSection/PostComponent/PostAuthorIconComponent";
-import PostComponent from "@/components/MainSection/PostComponent";
-import WriteTweetComponent from "@/components/MainSection/WriteTweetComponent";
+import PostComponent from "@/components/MainSection/PostComponent/PostComponent";
 import UserPostInteractionComponent from "@/components/Profile/UserPostInteractionComponent";
 import PostHeaderComponent from "@/components/Profile/PostHeaderComponent";
+import WriteTweetContainer from "@/components/WriteTweetContainer";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,7 +14,6 @@ import { BsThreeDots, BsDot } from "react-icons/bs";
 
 import { getTweetData, getTweetReplies } from "@/lib/getTweetData";
 import { getUserDataByID, getUserDataByUsername, getUserSessionID } from "@/lib/getUserData";
-import { PostReply } from "@/lib/ServerActions/TweetActions";
 
 import type { UserData } from "@/lib/types/userdata.types";
 import type { Tweet } from "@/lib/types/tweet.types";
@@ -61,8 +60,6 @@ export default async function UserPost({ params }: { params: { username: string,
         }
     }
 
-    const originalPosterData = getOriginalPosterData.userData as UserData;
-
     const tweetData = await getTweetData(supabase, postID);
 
     if (tweetData.error) {
@@ -76,12 +73,12 @@ export default async function UserPost({ params }: { params: { username: string,
 
     const tweetReplies = await getTweetReplies(supabase, postID);
 
-    if(tweetReplies.error) {
+    if (tweetReplies.error) {
         console.error(`UserPost Componenet ${tweetReplies.error.status} Error: ${tweetReplies.error.message}`);
         return null;
     }
 
-    if(tweetReplies.data) {
+    if (tweetReplies.data) {
         for (let reply of tweetReplies.data) {
             const replyTweet = reply as Tweet;
             replies.push(replyTweet);
@@ -110,7 +107,6 @@ export default async function UserPost({ params }: { params: { username: string,
             }
 
             const replyToID: string = data[0].reply_to;
-            const profileToReplyTo: string = data[0].profile_id;
 
             const replyTo = await getTweetData(supabase, replyToID);
 
@@ -124,9 +120,13 @@ export default async function UserPost({ params }: { params: { username: string,
         }
     }
 
-    async function handlePostReplyServerAction(formData: FormData) {
+    async function handlePostReplyServerAction() {
         "use server";
-        if (currentUser) await PostReply(formData, postID, currentUser.id);
+        revalidatePath("/");
+    }
+
+    async function handleDeleteTweet() {
+        "use server";
         revalidatePath("/");
     }
 
@@ -175,36 +175,23 @@ export default async function UserPost({ params }: { params: { username: string,
                     </div>
                     <UserPostInteractionComponent tweet={tweet} replies={replies} currentUser={currentUser} postID={postID} />
                 </div>
-                <div className="border-b-[1px] border-slate/25 py-6">
-                    <form action={handlePostReplyServerAction}>
-                        <div className="flex flex-row mx-2">
-                            <div>
-                                <PostAuthorIconComponent userData={currentUser} />
-                            </div>
-                            <div className="flex flex-row w-full">
-                                <div className="w-[85%]">
-                                    <WriteTweetComponent isReply={true} />
-                                </div>
-                                <div className="h-full relative mx-2">
-                                    <div className="absolute bottom-0">
-                                        <button className="text-white px-4 py-2 bg-primary font-bold rounded-full text-sm">Reply</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                {
-                    replies.length ? (
-                        replies.map((tweet) => {
-                            return (
-                                <PostComponent key={tweet.id} tweet={tweet} currentUser={currentUser} />
-                            )
-                        })
-                    )
-                        :
-                        null
-                }
+                <form action={handlePostReplyServerAction}>
+                    <WriteTweetContainer isReply={true} tweet={tweet} currentUser={currentUser} />
+                </form>
+
+                <form action={handleDeleteTweet}>
+                    {
+                        replies.length ? (
+                            replies.map((tweet) => {
+                                return (
+                                    <PostComponent key={tweet.id} tweet={tweet} currentUser={currentUser} />
+                                )
+                            })
+                        )
+                            :
+                            null
+                    }
+                </form>
             </div>
         </div>
     )

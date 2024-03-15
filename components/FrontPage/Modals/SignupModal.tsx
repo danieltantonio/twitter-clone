@@ -13,14 +13,27 @@ import SignUpStepThree from "./SignUpStepThree";
 
 import type { SignupForm } from "@/lib/types/signupform.types";
 
+const initFormErrors: SignupForm = {
+  name: "",
+  email: "",
+  password: "",
+  confirmPass: ""
+};
+
 export default function SignupModal(props: { handleInputClickStepThree: () => void, signupForm: SignupForm, signupStep: number, handleSignupStep: () => void, handleSignupForm: (formData: { value: string, name: string }) => void }) {
   const router = useRouter();
+  const supabase = createClient();
   const { signupForm, signupStep, handleSignupStep, handleSignupForm, handleInputClickStepThree } = props;
   const [nextStep, setNextStep] = useState(true);
   const [signupLoading, setSignupLoading] = useState(false);
   const [isUniqueUsername, setIsUniqueUsername] = useState(false);
   const [isUniqueEmail, setIsUniqueEmail] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState(initFormErrors);
+
+  function handleFormErrors(name: string, value: string) {
+    setFormErrors({ ...formErrors, [name]: value })
+  }
 
   function handleFormChange(formData: { value: string, name: string }) {
     const { value, name } = formData;
@@ -39,7 +52,9 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   async function handleSignup() {
     const { email, name, password } = signupForm;
-    const supabase = await createClient();
+    const lowercaseName = name.toLowerCase();
+
+    console.log(lowercaseName);
 
     setSignupLoading(true);
 
@@ -48,7 +63,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
       password,
       options: {
         data: {
-          user_name: name,
+          user_name: lowercaseName,
           email: email
         },
         emailRedirectTo: `${location.origin}/home`
@@ -73,8 +88,11 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
 
   async function onFormChange(e: any) { // FIX ME
     const { value, name } = e.target;
-    if(name === "name" || name === "email") handleLoading(true);
+    if(name === "name" || name === "email") {
+      handleLoading(true);
+    }
     handleFormChange({ value, name });
+    handleLoading(false);
   }
 
   function handleLoading(loadingState: boolean) {
@@ -82,7 +100,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
   }
 
   useEffect(() => {
-    const isValidName = signupForm.name.length >= 6 && signupForm.name.length <= 12 && isUniqueUsername;
+    const isValidName = signupForm.name.length >= 1 && signupForm.name.length <= 12 && isUniqueUsername;
     const isValidPassword = signupForm.password.length >= 6 && signupForm.password.length <= 12;
     const isValidConfirmPass = signupForm.confirmPass === signupForm.password;
     const isValidEmail = isUniqueEmail;
@@ -108,7 +126,7 @@ export default function SignupModal(props: { handleInputClickStepThree: () => vo
         </span>
       </div>
       {
-        signupStep === 1 && <SignUpStepOne email={signupForm.email} name={signupForm.name} onFormChange={onFormChange} handleUniqueUsername={handleUniqueUsername} handleUniqueEmail={handleUniqueEmail} handleLoading={handleLoading}/>
+        signupStep === 1 && <SignUpStepOne email={signupForm.email} name={signupForm.name} formErrors={formErrors} onFormChange={onFormChange} handleUniqueUsername={handleUniqueUsername} handleUniqueEmail={handleUniqueEmail} handleLoading={handleLoading} handleFormErrors={handleFormErrors} />
       }
       {
         signupStep === 2 && <SignUpStepTwo password={signupForm.password} confirmPass={signupForm.confirmPass} onFormChange={onFormChange} />

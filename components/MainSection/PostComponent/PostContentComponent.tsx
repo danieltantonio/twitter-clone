@@ -10,7 +10,6 @@ import { BsDot, BsThreeDots, BsTrash3Fill } from "react-icons/bs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
-import { useTweetsState } from "@/lib/store/tweetStore";
 import { createClient } from "@/lib/supabase/client";
 import fgClick from "@/lib/onClickForeground";
 
@@ -21,12 +20,9 @@ dayjs.extend(relativeTime);
 
 function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (state: boolean) => void }) {
     const { tweet, handleHasClickedDelete } = props;
-    const { tweets, setTweets } = useTweetsState();
     const supabase = createClient();
 
     async function handleDeleteTweet() {
-        const removedTweet = tweets.filter((t) => tweet.id !== t.id);
-
         const { error } = await supabase
             .from("tweet")
             .delete()
@@ -36,7 +32,6 @@ function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (st
             console.error(error);
             alert("Server error deleting tweet. Please try again later");
         } else {
-            setTweets(removedTweet);
             handleHasClickedDelete(false);
         }
     }
@@ -49,7 +44,7 @@ function DeleteTweetComponent(props: { tweet: Tweet, handleHasClickedDelete: (st
                         <span className="font-bold text-xl mb-2">Delete post?</span>
                         <span className="text-slate/75 text-sm font-light">This can&apos;t be undone and it will be removed from your profile, the timeline of any accounts that follow you, and from search results. </span>
                     </div>
-                    <div className="cursor-pointer w-full text-center bg-danger font-bold p-2 rounded-full mb-4" onClick={handleDeleteTweet}><span>Delete</span></div>
+                    <button className="cursor-pointer w-full text-center bg-danger font-bold p-2 rounded-full mb-4" onClick={handleDeleteTweet}><span>Delete</span></button>
                     <div className="cursor-pointer w-full text-center font-bold p-2 rounded-full border border-slate/75" onClick={() => handleHasClickedDelete(false)}><span>Cancel</span></div>
                 </div>
             </div>

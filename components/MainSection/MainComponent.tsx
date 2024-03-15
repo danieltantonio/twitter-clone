@@ -1,13 +1,16 @@
-import WriteTweetComponent from "./WriteTweetComponent"
+import WriteTweetContainer from "../WriteTweetContainer";
 import TweetsDisplayDashboard from "./TweetsDisplayDashboard";
-import WriteTweetInteractionComponent from "./WriteTweetInteractionComponent";
-import PostAuthorIconComponent from "./PostComponent/PostAuthorIconComponent";
 
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+
+import { createClient } from "@/lib/supabase/server";
 import { PostTweet } from "@/lib/ServerActions/TweetActions";
 
 import type { UserData } from "@/lib/types/userdata.types";
+import type { Tweet } from "@/lib/types/tweet.types";
 
-function HomeOption(props: { label: string, className?: string }): JSX.Element {
+async function HomeOption(props: { label: string, className?: string }) {
   const { label, className } = props;
   let includedClasses = "w-1/2 text-center p-4 h-full hover:bg-white/10 font-semibold text-sm group";
 
@@ -22,10 +25,29 @@ function HomeOption(props: { label: string, className?: string }): JSX.Element {
 
 export default async function MainComponent(props: { currentUser: UserData }) {
   const { currentUser } = props;
+  const cookieStore = cookies();
+  const supabase = await createClient(cookieStore);
 
-  async function handlePostTweetServerAction(formData: FormData) {
+  const { data: tweetsData, error } = await supabase
+    .from("secured_tweets")
+    .select("*")
+    .eq("is_reply", false);
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  const fetchedTweets = tweetsData as Tweet[];
+
+  async function handlePostTweetServerAction() {
     "use server";
-    await PostTweet(formData, currentUser.id);
+    revalidatePath("/");
+  }
+
+  async function handleDeleteTweet() {
+    "use server";
+    revalidatePath("/");
   }
 
   return (
@@ -40,16 +62,13 @@ export default async function MainComponent(props: { currentUser: UserData }) {
         </div>
       </div>
 
-      <div className="flex flex-row w-full border-b border-slate/25 p-2 mt-2">
-        <PostAuthorIconComponent userData={currentUser} />
-        <div className="flex flex-col w-full">
-          <form action={handlePostTweetServerAction}>
-            <WriteTweetComponent />
-            <WriteTweetInteractionComponent />
-          </form>
-        </div>
-      </div>
-      <TweetsDisplayDashboard currentUser={currentUser} />
+      <form action={handlePostTweetServerAction}>
+        <WriteTweetContainer currentUser={currentUser} />
+      </form>
+
+      <form action={handleDeleteTweet}>
+        <TweetsDisplayDashboard currentUser={currentUser} fetchedTweets={fetchedTweets} />
+      </form>
     </>
   )
 }

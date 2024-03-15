@@ -89,7 +89,7 @@ export default function EditProfileMain(props: {
 
     }
 
-    async function saveChanges(init?: boolean) {
+    async function saveChanges() {
         const formData = new FormData();
         const getNewAvatar = await fetch(profileData.avatar);
         const getNewHeader = await fetch(profileData.header);
@@ -99,28 +99,11 @@ export default function EditProfileMain(props: {
         const newAvatar = profileData.avatar !== defaultAvatar ? newAvatarBlob : defaultAvatar;
         const newHeader = profileData.header !== defaultHeader ? newHeaderBlob : defaultHeader;
 
-        let dataBody = {};
-
-        if (init) {
-            dataBody = {
-                avatar: newAvatar,
-                header: newHeader,
-                name: profileData.name,
-                bio: profileData.bio,
-                private: privateProfile,
-                init: true
-            }
-        } else {
-            dataBody = {
-                avatar: newAvatar,
-                header: newHeader,
-                name: profileData.name,
-                bio: profileData.bio,
-                private: privateProfile
-            }
-        }
-
-        formData.append("profileData", JSON.stringify(dataBody));
+        formData.append("avatar", newAvatar);
+        formData.append("header", newHeader);
+        formData.append("name", profileData.name);
+        formData.append("bio", profileData.bio);
+        formData.append("private", privateProfile ? "true" : "false");
 
         await fetch(`/api/user/edit_profile`, {
             method: "POST",
@@ -128,7 +111,10 @@ export default function EditProfileMain(props: {
             body: formData
         });
 
-        if (init) router.push("/home");
+        if (initProfile) {
+            router.push("/home");
+            router.refresh();
+        }
     }
 
     return (
@@ -146,7 +132,7 @@ export default function EditProfileMain(props: {
                                 }
                                 <span className="font-bold text-xl ml-10">Edit profile</span>
                             </div>
-                            <span className="text-black bg-white font-semibold text-sm rounded-full px-4 py-2" onClick={() => saveChanges(initProfile)}>Save</span>
+                            <span className="cursor-pointer text-black bg-white font-semibold text-sm rounded-full px-4 py-2" onClick={saveChanges}>Save</span>
                         </div>
                         <div className="w-full relative my-2 pb-10">
                             <div className="w-full h-[200px] relative">

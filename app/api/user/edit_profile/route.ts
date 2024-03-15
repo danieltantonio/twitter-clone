@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server"; 
+import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 
@@ -12,20 +12,19 @@ export async function POST(req: NextRequest) {
     const avatarName: string = uuidv4();
     const headerName: string = uuidv4();
 
-    const dataObjStr = Object(data.get("profileData"));
-    const dataObj = JSON.parse(dataObjStr);
+    const dataObj = Object.fromEntries(data);
 
     const defaultAvatar = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/avatar/default.jpg";
     const defaultHeader = "https://cltgswnlsgvjrfszkaiz.supabase.co/storage/v1/object/public/header/default.jpg";
 
     const { data: session, error } = await supabase.auth.getSession();
 
-    if(error) {
+    if (error) {
         console.error("RUH ROH RAGGY", error);
-        return NextResponse.json({ "Server Session Error":  "Check Console." });
+        return NextResponse.json({ "Server Session Error": "Check Console." });
     }
 
-    if(!session.session) {
+    if (!session.session) {
         console.error("Session Error: No active session.");
         return NextResponse.json({ "Server Session Error": "No active session. Please log-in." }, {
             status: 401
@@ -34,15 +33,15 @@ export async function POST(req: NextRequest) {
 
     const currentUser = session.session.user.id;
 
-    if(dataObj.avatar !== defaultAvatar) {
+    if (dataObj.avatar !== defaultAvatar) {
         const { error: uploadAvatarErr } = await supabase
             .storage
             .from("avatar")
             .upload(`${currentUser}/${avatarName}.jpg`, dataObj.avatar, {
                 upsert: false,
                 contentType: "image/jpeg"
-        });
-    
+            });
+
         if (uploadAvatarErr) {
             console.error("Upload Avatar Error: ", uploadAvatarErr);
             return NextResponse.json({ "Avatar Upload Error": "Failed to upload avatar. Check console." }, {
@@ -51,18 +50,18 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    if(dataObj.header !== defaultHeader) {
+    if (dataObj.header !== defaultHeader) {
         const { error: uploadHeaderErr } = await supabase
             .storage
             .from("header")
             .upload(`${currentUser}/${headerName}.jpg`, dataObj.header, {
                 upsert: false,
                 contentType: "image/jpeg"
-        });
-    
+            });
+
         if (uploadHeaderErr) {
             console.error("Upload Header Error: ", uploadHeaderErr);
-            return NextResponse.json({ "Header Upload Error": "Failed to upload header. Check console."}, {
+            return NextResponse.json({ "Header Upload Error": "Failed to upload header. Check console." }, {
                 status: 500
             });
         }
@@ -75,37 +74,22 @@ export async function POST(req: NextRequest) {
     const headerUrl = dataObj.header !== defaultHeader ? uploadedHeaderUrl.publicUrl : defaultHeader;
 
     const { data: updateProfile, error: updateProfileErr } = await supabase
-    .from("profile")
-    .update({
-        display_name: dataObj.name,
-        bio: dataObj.bio,
-        avatar_url: avatarUrl,
-        header_url: headerUrl,
-        private_profile: dataObj.private
-    })
-    .eq("id", currentUser);
+        .from("profile")
+        .update({
+            display_name: dataObj.name,
+            bio: dataObj.bio,
+            avatar_url: avatarUrl,
+            header_url: headerUrl,
+            private_profile: dataObj.private === "true" ? true : false,
+            init: true
+        })
+        .eq("id", currentUser);
 
-    if(updateProfileErr) {
+    if (updateProfileErr) {
         console.error("Update Profile Error: ", updateProfileErr);
         return NextResponse.json({ Error: "Update Profile Error. Check console." }, {
             status: 500
         });
-    }
-
-    if(dataObj.init) {
-        const { data, error: initErr } = await supabase
-            .from("profile")
-            .update({
-                init: true
-            })
-            .eq("id", currentUser);
-
-        if(initErr) {
-            console.error(`/api/edit_profile 500 Error: ${initErr}`);
-            return NextResponse.json({ Error: "Init Profile Error. Check console." }, {
-                status: 500
-            });
-        }
     }
 
     return NextResponse.json({ Success: "Successfully updated profile." });
