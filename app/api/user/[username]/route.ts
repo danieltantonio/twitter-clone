@@ -3,9 +3,11 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest, { params }: { params: { username: string }}) {
-    const { username } = params;
+    let { username } = params;
     const cookieStore = cookies();
     const supabase = await createClient(cookieStore);
+
+    username = username.toLowerCase();
     
     const { data: userProfiles, error: sqlErr } = await supabase.from("profile").select("*").eq("user_name", username);
 

@@ -4,7 +4,8 @@ import { AiOutlinePicture, AiOutlineFileGif, AiOutlineSchedule } from "react-ico
 import { BiPoll } from "react-icons/bi";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 
-export default function WriteTweetInteractionComponent() {
+export default function WriteTweetInteractionComponent(props: { isReply?: boolean, onSubmitPost: () => void }) {
+    const { isReply, onSubmitPost } = props;
     
     return (
         <div className="flex flex-row justify-between mt-2 w-full">
@@ -16,7 +17,7 @@ export default function WriteTweetInteractionComponent() {
                 <AiOutlineSchedule />
             </div>
             <div>
-                <button className="text-white px-4 py-2 bg-primary font-bold rounded-full text-sm">Tweet</button>
+                <button className="text-white px-4 py-2 bg-primary font-bold rounded-full text-sm" onClick={onSubmitPost}>{isReply ? "Reply" : "Tweet" }</button>
             </div>
         </div>
     )
